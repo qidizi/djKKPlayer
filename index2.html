@@ -117,7 +117,7 @@
     audio.volume = +$('#volume').val() / 100;
     // 停止自动播放下首
     audio.onended = playNext;
-    var pwd = '';
+    var pwd = prompt('授权码','');
     var proxy = 'http://qidizi.d.iguoyi.cn/';
     window.onbeforeunload = function () {
         // 退出前保存列表
