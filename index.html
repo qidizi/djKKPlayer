@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>djkk.com播放器</title>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <style>
+        .container {
+            max-width: 768px;
+        }
+
+        audio {
+            display: block;
+            width: 100%;
+        }
+
+        #playList, #result {
+            max-height: 400px;
+            overflow: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-bottom">
+    <form onsubmit="return false;" class="clearfix container center-block">
+
+
+        <div class="panel panel-default" id="playListBox">
+            <!-- Default panel contents -->
+            <div class="panel-heading">播放列表</div>
+            <div class="panel-body">
+            </div>
+
+            <!-- List group -->
+            <ul class="list-group" id="playList">
+
+            </ul>
+        </div>
+
+
+        <div class="panel panel-default hidden" id="resultBox">
+            <!-- Default panel contents -->
+            <div class="panel-heading">搜索结果</div>
+            <div class="panel-body">
+            </div>
+
+            <!-- List group -->
+            <ul class="list-group" id="result">
+            </ul>
+        </div>
+
+
+        <div class="input-group input-group-lg">
+            <input class="form-control" placeholder="请输入要查找的关键字" id="keyWord">
+            <div class="input-group-btn">
+                <button class="btn btn-default" type="submit">搜索</button>
+            </div>
+        </div>
+
+
+        <button type="button" class="btn btn-default btn-lg btn-block active" id="playListBtn">
+            <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+            <small id="playTitle">播放列表</small>
+        </button>
+
+        <div class="input-group input-group-lg">
+            <div class="input-group-btn">
+                <button class="btn btn-default jsVolumeStep isDown" type="button">
+                    <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
+                </button>
+            </div>
+            <input type="number" class="form-control" placeholder="输入音量，0~100" value="20" id="volume">
+            <div class="input-group-btn">
+                <button class="btn btn-default jsVolumeStep isUp" type="button" id="audioVolUp">
+                    <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+                </button>
+
+                <button class="btn btn-default" type="button" id="deletePlay">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                </button>
+
+                <button class="btn btn-default" type="button" id="playNext">
+                    <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+
+        <audio controls="controls" autoplay="autoplay"></audio>
+    </form>
+</div>
+
+
+<script>
+    window.onerror = function () {
+        alert('播放器异常\n' + JSON.stringify(arguments));
+    };
+    var audio = document.getElementsByTagName('audio')[0];
+    // 初始化播放音量，因为小米蓝牙对mac不支持调整声音
+    audio.volume = +$('#volume').val() / 100;
+    // 停止自动播放下首
+    audio.onended = playNext;
+    var pwd = '';
+    var proxy = 'http://qidizi.d.iguoyi.cn/';
+    window.onbeforeunload = function () {
+        // 退出前保存列表
+        localStorage.setItem('djKKPlayList', $('#playList').html());
+    };
+    // 恢复上轮列表
+    $('#playList').html(localStorage.getItem('djKKPlayList'));
+
+    $(document)
+        .delegate('#playListBtn', 'click', function () {
+            showResult($(this).hasClass('active'));
+        })
+        .delegate('.jsVolumeStep', 'click', function () {
+            // 减少音量
+            var vol = +$('#volume').val() + ($(this).hasClass('isUp') ? +1 : -1);
+
+            if (vol < 0) vol = 0;
+            else if (vol > 100) vol = 100;
+
+            // 改变值不会触发input的change，需要手工调整
+            audio.volume = +vol / 100;
+            $('#volume').val(vol);
+        })
+        .delegate('#volume', 'change', function () {
+            // 调整音量
+            audio.volume = +this.value / 100;
+        })
+        .delegate('.jsPlayResultItem', 'click', function () {
+            // 立即播放dj kk 搜索条目
+            var is = $(this).attr('data-is');
+            var href = $(this).parents('li').attr('data-href');
+            getSource(href, function (code) {
+                // var list=[{title:"Come Clean (moccan Ss Hifi Remix)",artist:"-",m4a: s_str+"/2009/2009-10/2009-10-05/2009100512253314.m4a"}];
+
+                code = $.trim(code.replace(/^[\S\s]+\/\/数据格式/gi, '').replace(/<\/script>[\s\S]+$/gi, ''));
+
+                if ('' === code) {
+                    mAlert('找不到播放地址');
+                    return;
+                }
+
+                var obj = new Function('', 'try{var s_str = "http://mx.djkk.com/mix";' + code + ';return list[0];}catch(e){}')();
+
+                if (!obj) {
+                    mAlert('无法解析播放地址');
+                    return;
+                }
+
+                var title = obj.title;
+                var src = obj.m4a;
+                var li = $('li[data-href="' + src + '"]');
+
+                if ('test' !== is && !li.length) {
+                    // 试听，不要添加到列表；其它情况，列表中没有这个歌曲时，追加到播放列表
+                    var li = '<li class="list-group-item"  data-href="' + src + '">' +
+                        '<span class="glyphicon glyphicon-music" aria-hidden="true"></span> ' +
+                        title +
+                        ' <button class="btn btn-primary jsPlayMe"  type="button" >' +
+                        '<i class="glyphicon glyphicon-play" aria-hidden="true"></i> ' +
+                        '</button> ' +
+                        '<button class="btn btn-danger jsRemoveMe"  type="button" >' +
+                        '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> ' +
+                        '</button> ' +
+                        '</li>';
+                    li = $(li);
+                    li.appendTo('#playList');
+                }
+
+                // 非只增加
+                'append' !== is && playMe(src, title, li);
+            });
+        })
+        .delegate('.jsRemoveMe', 'click', function () {
+            // 删除dj kk播放列表条目
+            var li = $(this).parents('li');
+            var src = li.attr('data-href');
+            li.remove();
+            // 如果删除项正在播放中，要更换下首
+            if (audio.src === src) playNext();
+        })
+        .delegate('.jsPlayMe', 'click', function () {
+            // 播放dj kk播放列表条目
+            var li = $(this).parents('li');
+            var src = li.attr('data-href');
+            playMe(src, li.text(), li);
+        })
+        .delegate('#playNext', 'click', function () {
+            // 播放dj kk播放列表条目
+            playNext();
+        })
+        .delegate('form', 'submit', function () {
+            // 查找显示业务
+            $('#resultBox .panel-body').html('');
+            var word = $.trim($('#keyWord').val());
+
+            if (!word) {
+                showResult(1);
+                $('#resultBox .panel-body').html('<div class="alert alert-danger" role="alert">请输入关键字</div>');
+                return;
+            }
+
+            getPage({keyword: word});
+        })
+        .delegate('.jsNextPage', 'click', function () {
+            // 下页
+            var href = $(this).attr('data-href');
+            getPage(href);
+        })
+    ;
+
+    // 播放列表与搜索结果切换
+    function showResult(yes) {
+        if (yes) {
+            // 显示结果，隐藏播放
+            $('#playListBtn').removeClass('active').find('span').addClass('glyphicon-folder-close').removeClass('glyphicon-folder-open');
+            $('#playListBox').addClass('hidden');
+            $('#resultBox').removeClass('hidden');
+        } else {
+            $('#playListBtn').addClass('active').find('span').removeClass('glyphicon-folder-close').addClass('glyphicon-folder-open');
+            $('#playListBox').removeClass('hidden');
+            $('#resultBox').addClass('hidden');
+        }
+    }
+
+    function getPage(get) {
+        showResult(1);
+        $('#resultBox .panel-body').html('<div class="alert alert-warning" role="alert">正在请求中...</div>');
+        var url = 'http://www.djkk.com/search.html';
+        $('#keyWord').attr('readonly', 'readonly');
+        getSource(url, function (code) {
+            $('#keyWord').removeAttr('readonly');
+            $('#resultBox .panel-body').html('<div class="alert alert-success" role="alert">请求完成</div>');
+            if (!code) {
+                return;
+            }
+
+            var links = '';
+            code.replace(/^[\s\S]+?你搜索的关键字|底部开始[\s\S]+?$/g, '')
+                .replace(/<a\s[^>]*?href\s*=\s*['"]([^"']+)['"][^>]*>([\s\S]+?)<\/a[>\s]/ig, function (m0, href, text) {
+                    // 删除html，保留text
+                    text = $.trim(text.replace(/<[^>]+>/, ''));
+
+                    if (/\/play\/\d+\.html/i.test(href)) {
+                        // 播放链接
+                        href = 'http://www.djkk.com/' + href.replace(/^\.+\//, '');
+                        links += '<li class="list-group-item"  data-href="' + href + '">' +
+                            '<span class="glyphicon glyphicon-music" aria-hidden="true"></span> ' +
+                            text +
+
+                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="test">' +
+                            '<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> ' +
+                            '</button> ' +
+
+                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="append">' +
+                            '<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> ' +
+                            '</button> ' +
+                            '<button type="button" class="btn btn-primary jsPlayResultItem" data-is="play">' +
+                            '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
+                            '</button> ' +
+                            '</li>';
+                    } else if (new RegExp('&keyword=[^&]+', 'i').test(href)) {
+                        links += '<li class="list-group-item jsNextPage"  data-href="' + href + '">' +
+                            '<button type="button" class="btn btn-primary">' +
+                            '<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span> ' +
+                            text +
+                            '</button> ' +
+                            '</li>';
+                    }
+                    return '';
+                });
+            $('#result').html(links);
+        }, get);
+    }
+
+    function playNext() {
+        // 列表为空
+        if (!$('#playList li').length) return;
+
+        var li = $('#playList li.isPlaying');
+
+        if (li.length) {
+            // 列表中有正在播放中
+            li = li.next();
+        }
+
+        if (!li.length) {
+            // 没有下个,或是刚开始，就从第一个开始播放
+            li = $('#playList li:first');
+        }
+
+        var src = li.attr('data-href');
+        playMe(src, li.text(), li);
+    }
+
+    function playMe(src, title, li) {
+        if (!src) return;
+        var playCls = 'active isPlaying';
+        $('#playList li').removeClass(playCls);
+        $(li).addClass(playCls);
+        $('#playTitle').text(title);
+        var audio = $('audio').get(0);
+        audio.src = src;
+    }
+
+    // 获取源码
+    function getSource(uri, cb, get, post) {
+        if ('string' === typeof get) {
+            get = get.replace(/^\?+/, '');
+        } else if ('object' === $.type(get)) {
+            get = $.param(get);
+        } else {
+            get = '';
+        }
+
+        if (get) {
+            get += '&';
+        }
+
+        get += '_miMa=' + encodeURIComponent(pwd) + '&_uri=' + encodeURIComponent(uri);
+        $.ajax({
+            url: proxy + '?' + get,
+            cache: false,
+            data: post,
+            dataType: 'json',
+            success: function (res) {
+                cb(res.data ? res.data.response : null);
+
+                if ('success' !== res.code) {
+                    mAlert(res.msg);
+                    return;
+                }
+            },
+            type: 'POST'
+        });
+    }
+
+    function mAlert(msg, title) {
+        $('#modal .modal-body').html(msg);
+        $('#modal .modal-title').text(title || '提示');
+        $('#modal').modal();
+    }
+</script>
+
+<div class="modal fade" tabindex="-1" id="modal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <p>One fine body&hellip;</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+</body>
+</html>
