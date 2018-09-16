@@ -4,10 +4,10 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>djkk.com播放器</title>
-<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -26,62 +26,63 @@
         }
 
         audio {
-            display: block;
             width: 100%;
+            height: 60px;
         }
 
-        #playList, #result {
-            max-height: 400px;
-            overflow: auto;
+        .listBody {
+            padding-top: 70px;
+            padding-bottom: 150px;
         }
-
     </style>
 </head>
 <body>
 
-<div class="navbar navbar-default navbar-fixed-bottom">
-    <form onsubmit="return false;" class="clearfix container center-block">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs  " role="tablist">
+            <li role="presentation" class="active">
+                <a href="#playListBox" aria-controls="playListBox" role="tab"
+                   data-toggle="tab">
+                    <button class="btn btn-link btn-sm" type="button">播放列表</button>
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#resultBox" aria-controls="resultBox" data-toggle="tab">
+                    <form onsubmit="return false;" class="form-inline" style="width: 180px;">
+                    <span class="input-group input-group-sm">
+                        <span class="input-group-addon" role="tab">搜索</span>
+                        <input class="form-control" placeholder="输入歌曲字眼" id="keyWord">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" id="search">GO</button>
+                        </span>
+                    </span>
+                    </form>
+                </a>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+
+<!-- Tab panes -->
+<div class="tab-content listBody">
+    <div role="tabpanel" class="tab-pane active" id="playListBox">
+        <ul class="list-group" id="playList"></ul>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="resultBox">
+        <ul class="list-group" id="result"></ul>
+    </div>
+</div>
 
 
-        <div class="panel panel-default" id="playListBox">
-            <!-- Default panel contents -->
-            <div class="panel-heading">播放列表</div>
-            <div class="panel-body">
-            </div>
+<nav class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
 
-            <!-- List group -->
-            <ul class="list-group" id="playList">
-
-            </ul>
-        </div>
-
-
-        <div class="panel panel-default hidden" id="resultBox">
-            <!-- Default panel contents -->
-            <div class="panel-heading">搜索结果</div>
-            <div class="panel-body">
-            </div>
-
-            <!-- List group -->
-            <ul class="list-group" id="result">
-            </ul>
-        </div>
-
-
-        <div class="input-group input-group-lg">
-            <input class="form-control" placeholder="请输入要查找的关键字" id="keyWord">
-            <div class="input-group-btn">
-                <button class="btn btn-default" type="submit">搜索</button>
-            </div>
-        </div>
-
-
-        <button type="button" class="btn btn-default btn-lg btn-block active" id="playListBtn">
-            <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
-            <small id="playTitle">播放列表</small>
-        </button>
-
-        <div class="input-group input-group-lg">
+        <div class="input-group input-group-sm">
             <div class="input-group-btn">
                 <button class="btn btn-default jsVolumeStep isDown" type="button">
                     <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
@@ -102,34 +103,45 @@
                 </button>
             </div>
         </div>
-
         <audio controls="controls" autoplay="autoplay"></audio>
-    </form>
-</div>
-
-
+    </div>
+</nav>
 <script>
-    window.onerror = function () {
-        alert('播放器异常\n' + JSON.stringify(arguments));
-    };
-    var audio = document.getElementsByTagName('audio')[0];
-    // 初始化播放音量，因为小米蓝牙对mac不支持调整声音
-    audio.volume = +$('#volume').val() / 100;
-    // 停止自动播放下首
-    audio.onended = playNext;
-    var pwd = prompt('授权码','');
-    var proxy = location.protocol + '//qidizi.d.iguoyi.cn/';
-    window.onbeforeunload = function () {
-        // 退出前保存列表
-        localStorage.setItem('djKKPlayList', $('#playList').html());
-    };
-    // 恢复上轮列表
-    $('#playList').html(localStorage.getItem('djKKPlayList'));
+    var proxy = 'http://qidizi.d.iguoyi.cn/';
+    var pwd = location.search.replace('?', '');
+
+    function quit(tip) {
+        document.documentElement.innerHTML = tip;
+    }
+
+    +function () {
+        if ('http:' !== location.protocol.toLowerCase()) {
+            quit('只支持通过http://协议访问');
+            return;
+        }
+
+        if (!pwd) {
+            quit('缺少授权密码，请通过如下链接重新访问\n' + location.href.replace(/[\?#]+/gi, '') + '?直接在问号后面拼接授权密码');
+            return;
+        }
+
+        window.onerror = function () {
+            alert('播放器异常\n' + JSON.stringify(arguments));
+        };
+
+        window.audio = document.getElementsByTagName('audio')[0];
+        // 停止自动播放下首
+        audio.onended = playNext;
+        window.onbeforeunload = function () {
+            // 退出前保存列表
+            localStorage.setItem('djKKPlayList', $('#playList').html());
+        };
+        // 恢复上轮列表
+        $('#playList').html(localStorage.getItem('djKKPlayList'));
+    }();
+
 
     $(document)
-        .delegate('#playListBtn', 'click', function () {
-            showResult($(this).hasClass('active'));
-        })
         .delegate('.jsVolumeStep', 'click', function () {
             // 减少音量
             var vol = +$('#volume').val() + ($(this).hasClass('isUp') ? +1 : -1);
@@ -149,6 +161,7 @@
             // 立即播放dj kk 搜索条目
             var is = $(this).attr('data-is');
             var href = $(this).parents('li').attr('data-href');
+            // 解析当前歌曲的音乐链接
             getSource(href, function (code) {
                 // var list=[{title:"Come Clean (moccan Ss Hifi Remix)",artist:"-",m4a: s_str+"/2009/2009-10/2009-10-05/2009100512253314.m4a"}];
 
@@ -173,14 +186,13 @@
                 if ('test' !== is && !li.length) {
                     // 试听，不要添加到列表；其它情况，列表中没有这个歌曲时，追加到播放列表
                     var li = '<li class="list-group-item"  data-href="' + src + '">' +
+                        ' <button class="btn btn-danger btn-xs jsRemoveMe"  type="button" >' +
+                        '<i class="glyphicon glyphicon-trash" aria-hidden="true"></i> ' +
+                        '</button> ' +
+                        '<a class="jsPlayMe">' +
                         '<span class="glyphicon glyphicon-music" aria-hidden="true"></span> ' +
                         title +
-                        ' <button class="btn btn-primary jsPlayMe"  type="button" >' +
-                        '<i class="glyphicon glyphicon-play" aria-hidden="true"></i> ' +
-                        '</button> ' +
-                        '<button class="btn btn-danger jsRemoveMe"  type="button" >' +
-                        '<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> ' +
-                        '</button> ' +
+                        '</a> ' +
                         '</li>';
                     li = $(li);
                     li.appendTo('#playList');
@@ -198,6 +210,15 @@
             // 如果删除项正在播放中，要更换下首
             if (audio.src === src) playNext();
         })
+        .delegate('#deletePlay', 'click', function () {
+            // 删除当前播放的歌曲
+            // 先记录当前列表中正在播放中的
+            var li = $('#playList li.isPlaying');
+            // 播放下首：可能是试听，也可能是列表播放
+            playNext();
+            // 如果播放的是列表的，需要从列表中删除
+            li.remove();
+        })
         .delegate('.jsPlayMe', 'click', function () {
             // 播放dj kk播放列表条目
             var li = $(this).parents('li');
@@ -208,14 +229,13 @@
             // 播放dj kk播放列表条目
             playNext();
         })
-        .delegate('form', 'submit', function () {
+        .delegate('#search', 'click', function () {
             // 查找显示业务
-            $('#resultBox .panel-body').html('');
+            $('#result').html('');
             var word = $.trim($('#keyWord').val());
 
             if (!word) {
-                showResult(1);
-                $('#resultBox .panel-body').html('<div class="alert alert-danger" role="alert">请输入关键字</div>');
+                $('#result').html('<li class="list-group-item text-danger">请输入关键字</li>');
                 return;
             }
 
@@ -228,28 +248,15 @@
         })
     ;
 
-    // 播放列表与搜索结果切换
-    function showResult(yes) {
-        if (yes) {
-            // 显示结果，隐藏播放
-            $('#playListBtn').removeClass('active').find('span').addClass('glyphicon-folder-close').removeClass('glyphicon-folder-open');
-            $('#playListBox').addClass('hidden');
-            $('#resultBox').removeClass('hidden');
-        } else {
-            $('#playListBtn').addClass('active').find('span').removeClass('glyphicon-folder-close').addClass('glyphicon-folder-open');
-            $('#playListBox').removeClass('hidden');
-            $('#resultBox').addClass('hidden');
-        }
-    }
 
+    // 解析页面的属于歌曲和下页链接
     function getPage(get) {
-        showResult(1);
-        $('#resultBox .panel-body').html('<div class="alert alert-warning" role="alert">正在请求中...</div>');
+        $('#result').html('<li class="list-group-item text-info">正在请求中...</li>');
         var url = 'http://www.djkk.com/search.html';
         $('#keyWord').attr('readonly', 'readonly');
         getSource(url, function (code) {
             $('#keyWord').removeAttr('readonly');
-            $('#resultBox .panel-body').html('<div class="alert alert-success" role="alert">请求完成</div>');
+            $('#result').html('<li class="list-group-item text-success">请求完成</li>');
             if (!code) {
                 return;
             }
@@ -264,34 +271,35 @@
                         // 播放链接
                         href = 'http://www.djkk.com/' + href.replace(/^\.+\//, '');
                         links += '<li class="list-group-item"  data-href="' + href + '">' +
-                            '<span class="glyphicon glyphicon-music" aria-hidden="true"></span> ' +
-                            text +
-
-                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="test">' +
+                            ' <button type="button" class="btn btn-primary  btn-xs jsPlayResultItem" data-is="test">' +
                             '<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> ' +
                             '</button> ' +
 
-                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="append">' +
+                            ' <button type="button" class="btn btn-primary  btn-xs jsPlayResultItem" data-is="append">' +
                             '<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> ' +
                             '</button> ' +
-                            '<button type="button" class="btn btn-primary jsPlayResultItem" data-is="play">' +
+                            '<button type="button" class="btn btn-primary  btn-xs jsPlayResultItem" data-is="play">' +
                             '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
                             '</button> ' +
+                            text +
                             '</li>';
                     } else if (new RegExp('&keyword=[^&]+', 'i').test(href)) {
-                        links += '<li class="list-group-item jsNextPage"  data-href="' + href + '">' +
-                            '<button type="button" class="btn btn-primary">' +
-                            '<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span> ' +
+                        links += '<li class="list-group-item jsNextPage btn btn-primary  btn-xs"  data-href="' + href + '">' +
                             text +
-                            '</button> ' +
                             '</li>';
                     }
                     return '';
                 });
+
+            if (!links) {
+                links += '<li class="list-group-item text-danger">找不到匹配歌曲</li>';
+            }
+
             $('#result').html(links);
         }, get);
     }
 
+    // 播放列表中下首
     function playNext() {
         // 列表为空
         if (!$('#playList li').length) return;
@@ -312,12 +320,13 @@
         playMe(src, li.text(), li);
     }
 
+    // 播放当前歌曲
     function playMe(src, title, li) {
         if (!src) return;
         var playCls = 'active isPlaying';
         $('#playList li').removeClass(playCls);
         $(li).addClass(playCls);
-        $('#playTitle').text(title);
+        document.title = title;
         var audio = $('audio').get(0);
         audio.src = src;
     }
@@ -337,8 +346,9 @@
         }
 
         get += '_miMa=' + encodeURIComponent(pwd) + '&_uri=' + encodeURIComponent(uri);
+        get = proxy + '?' + get;
         $.ajax({
-            url: proxy + '?' + get,
+            url: get,
             cache: false,
             data: post,
             dataType: 'json',
@@ -347,8 +357,11 @@
 
                 if ('success' !== res.code) {
                     mAlert(res.msg);
-                    return;
                 }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                cb(textStatus);
+                mAlert('请求 ' + get + '异常：' + textStatus);
             },
             type: 'POST'
         });
