@@ -8,7 +8,9 @@
   
   document.getElementById('aaa').onclick = function (){
     var win = window.open('about:blank','player');
-    win.document.write('<img src="http://fj2.eastday.com/hdqxb2013/20130823_7/node757990/images/02347082.jpg" />');
+    win.document.write(html);
+    win.document.close();
+    window.close();
   }
   
   // 因为github要求https，暂不搞，使用open方式尝试
