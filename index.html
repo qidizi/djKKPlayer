@@ -2,11 +2,11 @@
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
   crossorigin="anonymous"></script>
-<a href="#" onclick="openHtml">open player</a>
+<a href="#" id="aaa">open player</a>
 <script>
   var html = null;
   
-  function openHtml(){
+  document.getElementById('aaa').onclick = function (){
     var win = window.open('about:blank','player');
     win.document.write('<img src="http://fj2.eastday.com/hdqxb2013/20130823_7/node757990/images/02347082.jpg" />');
   }
