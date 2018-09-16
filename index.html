@@ -1,1 +1,17 @@
-lkkk
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<a href="#" onclick="openHtml">open player</a>
+<script>
+  var html = null;
+  
+  function openHtml(){
+    var win = window.open('about:blank','player');
+    win.document.write('<img src="http://fj2.eastday.com/hdqxb2013/20130823_7/node757990/images/02347082.jpg" />');
+  }
+  
+  // 因为github要求https，暂不搞，使用open方式尝试
+  $.get('/index2.html',function(text){},'text');
+</script>
+  
