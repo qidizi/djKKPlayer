@@ -1,14 +1,15 @@
 <?php
 
+// 允许任何域名通过ajax访问
+header('Access-Control-Allow-Origin: *', true);
+header('Access-Control-Allow-Methods: *', true);
+header('Access-Control-Allow-Headers: *', true);
+
 if (empty($_GET['_miMa']) || md5($_GET['_miMa']) !== '') {
     // TODO 设置授权码
     fail('未授权');
 }
 
-// 允许任何域名通过ajax访问
-header('Access-Control-Allow-Origin: *', true);
-header('Access-Control-Allow-Methods: *', true);
-header('Access-Control-Allow-Headers: *', true);
 unset($_GET['_miMa']);
 
 if (empty($_GET['_uri'])) {
