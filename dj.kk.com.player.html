@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="description" content="dj播放器">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>电小二</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
@@ -217,14 +218,14 @@
         .delegate('.jsRemoveMe', 'click', function () {
             var li = $(this).parents('li');
             var src = li.attr('data-href');
-            li.remove();
             if (audio.src === src) playNext();
+            li.remove();
             saveList();
         })
         .delegate('#deletePlay', 'click', function () {
             var li = $('#playList li[data-href="' + audio.src + '"]');
-            li.remove();
             audio.src = '';
+            li.remove();
             saveList();
         })
         .delegate('.jsPlayMe', 'click', function () {
