@@ -81,7 +81,8 @@
                     <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
                 </button>
             </div>
-            <input type="number" class="form-control" placeholder="Vol 0~100" value="20" id="volume">
+            <input type="number" class="form-control" placeholder="Vol 0~10" value="2" min="0" max="10" step="1"
+                   maxlength="2" minlength="1" id="volume">
             <div class="input-group-btn">
                 <button class="btn btn-default jsVolumeStep isUp" type="button" id="audioVolUp">
                     <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
@@ -142,6 +143,8 @@
             }
         });
 
+        audio.volume = 0.5;
+        $('#volume').val(audio.volume * 10);
         audio.onended = playNext;
 
         try {
@@ -164,18 +167,18 @@
 
     $(document)
         .delegate('.jsVolumeStep', 'click', function () {
-            if (plaform.isIos) {
+            /*if (plaform.isIos) {
                 mAlert('ios暂时不支持此功能，请使用系统调节');
                 return;
-            }
+            }*/
 
             var vol = +$('#volume').val() + ($(this).hasClass('isUp') ? +1 : -1);
-            if (vol < 0) vol = 0; else if (vol > 100) vol = 100;
-            audio.volume = +vol / 100;
+            if (vol < 0) vol = 0; else if (vol > 10) vol = 10;
+            audio.volume = +vol / 10;
             $('#volume').val(vol);
         })
         .delegate('#volume', 'change', function () {
-            audio.volume = +this.value / 100;
+            audio.volume = +this.value / 10;
         })
         .delegate('.jsPlayResultItem', 'click', function () {
             var is = $(this).attr('data-is');
