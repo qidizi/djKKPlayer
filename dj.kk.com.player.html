@@ -21,6 +21,7 @@
         }
 
         audio {
+            display: block;
             width: 100%;
         }
 
@@ -75,34 +76,27 @@
 </div>
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
-        <div class="input-group input-group-lg">
-            <div class="input-group-btn">
-                <button class="btn btn-default jsVolumeStep isDown" type="button">
-                    <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
-                </button>
-            </div>
-            <input type="number" class="form-control" placeholder="Vol 0~10" value="2" min="0" max="10" step="1"
-                   maxlength="2" minlength="1" id="volume">
-            <div class="input-group-btn">
-                <button class="btn btn-default jsVolumeStep isUp" type="button" id="audioVolUp">
-                    <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-                </button>
-
-                <button class="btn btn-default" type="button" id="deletePlay">
+        <div class="row">
+            <div class="col-xs-2">
+                <button class="btn btn-danger  navbar-btn navbar-left" type="button" id="deletePlay">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                 </button>
+            </div>
 
-                <button class="btn btn-default" type="button" id="playNext">
+            <div class="col-xs-8"><p id="song" class="navbar-text text-center">播放已停止</p></div>
+            <div class="col-xs-2">
+                <button class="btn btn-default   navbar-btn navbar-left" type="button" id="playNext">
                     <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
                 </button>
             </div>
         </div>
-        <small id="song"></small>
+        <div id="ss"></div>
         <audio controls="controls" autoplay="autoplay" id="audio"></audio>
     </div>
 </nav>
 <script>
     plaform = {
+        // ios volume readonly
         isIos: 'iPhone' === navigator.platform,
         isMac: 'MacIntel' === navigator.platform,
         isAndroid: navigator.userAgent.indexOf('Android')
@@ -133,19 +127,24 @@
 
         window.audio = document.getElementById('audio');
 
-        $(function () {
-            if (plaform.isIos) {
-                mAlert('欢迎光临电小二！免费无限畅听！ -- By qidizi');
-                $('body').bind('click', function () {
-                    audio.play();
-                    $('body').unbind('click');
-                });
-            }
-        });
+        if (plaform.isIos) {
+            $('body').bind('touchstart', function () {
+                audio.play();
+                $(this).unbind('touchstart');
+            });
+        }
 
-        audio.volume = 0.5;
-        $('#volume').val(audio.volume * 10);
+        // ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；
         audio.onended = playNext;
+
+        /*
+        setInterval(function () {
+            var play = audio.currentTime||0;
+            var end = audio.duration||0;
+
+            if (play > 5) playNext();
+        }, 2000);
+        */
 
         try {
             var list = new Function('', 'return ' + localStorage.getItem('djKKPlayList'))();
@@ -166,20 +165,6 @@
 
 
     $(document)
-        .delegate('.jsVolumeStep', 'click', function () {
-            /*if (plaform.isIos) {
-                mAlert('ios暂时不支持此功能，请使用系统调节');
-                return;
-            }*/
-
-            var vol = +$('#volume').val() + ($(this).hasClass('isUp') ? +1 : -1);
-            if (vol < 0) vol = 0; else if (vol > 10) vol = 10;
-            audio.volume = +vol / 10;
-            $('#volume').val(vol);
-        })
-        .delegate('#volume', 'change', function () {
-            audio.volume = +this.value / 10;
-        })
         .delegate('.jsPlayResultItem', 'click', function () {
             var is = $(this).attr('data-is');
             var href = $(this).parents('li').attr('data-href');
