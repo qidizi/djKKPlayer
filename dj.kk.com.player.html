@@ -121,8 +121,8 @@
             return;
         }
 
-        window.onerror = function () {
-            alert('播放器发生异常，您可以尝试继续使用：\n' + JSON.stringify(arguments));
+        window.onerror = function (msg, src, line, col, e) {
+            alert('O坏了' + JSON.stringify([line,col,msg,src,e]));
         };
 
         window.audio = document.getElementById('audio');
@@ -133,7 +133,7 @@
                     +"某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
                 $('body').bind('touchstart', function () {
                     audio.play();
-                    $(this).unbind('touchstart');
+                    $("body").unbind('touchstart');
                 });
             }
         });
@@ -276,7 +276,10 @@
             json.push(obj);
         });
         json = JSON.stringify(json);
-        localStorage.setItem('djKKPlayList', json);
+        try{
+            // 隐身模式会出错
+            localStorage.setItem('djKKPlayList', json);
+        } catch(e) {}
     }
 
     // parse song link
