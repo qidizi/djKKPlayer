@@ -166,6 +166,7 @@
 
     $(document)
         .delegate('.jsPlayResultItem', 'click', function () {
+            $(this).addClass("active");
             var is = $(this).attr('data-is');
             var href = $(this).parents('li').attr('data-href');
             getSource(href, function (code) {
@@ -246,7 +247,7 @@
 
     function listLi(src, title, cls) {
         return '<li class="list-group-item ' + (cls || '') + '"  data-href="' + src + '">' +
-            ' <button class="btn btn-danger btn-lg jsRemoveMe"  type="button" >' +
+            ' <button class="btn btn-danger jsRemoveMe"  type="button" >' +
             '<i class="glyphicon glyphicon-trash" aria-hidden="true"></i> ' +
             '</button> ' +
             '<a class="jsPlayMe" href="javascript:void(0);">' +
@@ -301,20 +302,20 @@
                         // get the song url
                         href = 'http://www.djkk.com/' + href.replace(/^\.+\//, '');
                         links += '<li class="list-group-item"  data-href="' + href + '">' +
-                            ' <button type="button" class="btn btn-primary  btn-lg jsPlayResultItem" data-is="test">' +
+                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="test">' +
                             '<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> ' +
                             '</button> ' +
 
-                            ' <button type="button" class="btn btn-primary  btn-lg jsPlayResultItem" data-is="append">' +
+                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="append">' +
                             '<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> ' +
                             '</button> ' +
-                            '<button type="button" class="btn btn-primary  btn-lg jsPlayResultItem" data-is="play">' +
+                            '<button type="button" class="btn btn-primary jsPlayResultItem" data-is="play">' +
                             '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
                             '</button> ' +
                             text +
                             '</li>';
                     } else if (new RegExp('&keyword=[^&]+', 'i').test(href)) {
-                        links += '<li class="list-group-item jsNextPage btn btn-primary  btn-lg"  data-href="' + href + '">' +
+                        links += '<li class="list-group-item jsNextPage btn btn-primary"  data-href="' + href + '">' +
                             text +
                             '</li>';
                     }
