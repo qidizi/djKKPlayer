@@ -111,6 +111,13 @@
     }
 
     +function () {
+        try {
+            localStorage.setItem("qidizi",1);
+        }catch(e){
+            quit("浏览器版本过低，或您使用了隐私模式(不支持)");
+            return;
+        }
+        
         if ('https:' === location.protocol.toLowerCase()) {
             quit('不支持https://');
             return;
