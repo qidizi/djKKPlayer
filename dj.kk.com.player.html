@@ -97,7 +97,7 @@
 <script>
     plaform = {
         // ios volume readonly
-        isIos: 'iPhone' === navigator.platform,
+        isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
         isMac: 'MacIntel' === navigator.platform,
         isAndroid: navigator.userAgent.indexOf('Android')
     };
@@ -126,15 +126,17 @@
         };
 
         window.audio = document.getElementById('audio');
-
-        if (plaform.isIos) {
-            mAlert("因ios家族血脉奇特，客官您可能会遇到浏览器切换到后台后无法自动播放下曲，"
-                +"某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
-            $('body').bind('touchstart', function () {
-                audio.play();
-                $(this).unbind('touchstart');
-            });
-        }
+        
+        $(function(){
+            if (plaform.isIos) {
+                mAlert("因ios家族血脉奇特，客官您可能会遇到浏览器切换到后台后无法自动播放下曲；"
+                    +"某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
+                $('body').bind('touchstart', function () {
+                    audio.play();
+                    $(this).unbind('touchstart');
+                });
+            }
+        });
 
         // ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；
         audio.onended = playNext;
