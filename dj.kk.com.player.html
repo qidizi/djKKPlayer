@@ -128,6 +128,8 @@
         window.audio = document.getElementById('audio');
 
         if (plaform.isIos) {
+            mAlert("因ios家族血脉奇特，客官您可能会遇到浏览器切换到后台后无法自动播放下曲，"
+                +"某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
             $('body').bind('touchstart', function () {
                 audio.play();
                 $(this).unbind('touchstart');
@@ -302,14 +304,14 @@
                         // get the song url
                         href = 'http://www.djkk.com/' + href.replace(/^\.+\//, '');
                         links += '<li class="list-group-item"  data-href="' + href + '">' +
-                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="test">' +
+                            ' <button type="button" class="btn btn-default jsPlayResultItem" data-is="test">' +
                             '<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> ' +
                             '</button> ' +
 
-                            ' <button type="button" class="btn btn-primary jsPlayResultItem" data-is="append">' +
+                            ' <button type="button" class="btn btn-default jsPlayResultItem" data-is="append">' +
                             '<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> ' +
                             '</button> ' +
-                            '<button type="button" class="btn btn-primary jsPlayResultItem" data-is="play">' +
+                            '<button type="button" class="btn btn-default jsPlayResultItem" data-is="play">' +
                             '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
                             '</button> ' +
                             text +
