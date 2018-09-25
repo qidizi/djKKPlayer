@@ -77,20 +77,28 @@
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
         <div class="row">
-            <div class="col-xs-2">
-                <button class="btn btn-danger  navbar-btn navbar-left" type="button" id="deletePlay">
-                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                </button>
-            </div>
-
-            <div class="col-xs-8"><p id="song" class="navbar-text text-center">播放已停止</p></div>
-            <div class="col-xs-2">
-                <button class="btn btn-default   navbar-btn navbar-left" type="button" id="playNext">
-                    <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
-                </button>
+            <div class="col-xs-12">
+                <div class="btn-group btn-group-justified" role="group">
+                    <a href="javascript:void(0);" class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown"
+                       role="button">
+                        <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
+                    </a>
+                    <a href="javascript:void(0);" class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp"
+                       rolw="button">
+                        <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
+                    </a>
+                    <a href="javascript:void(0);" class="btn btn-danger  navbar-btn navbar-left" role="button"
+                       id="deletePlay">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    </a>
+                    <a href="javascript:void(0);" class="btn btn-default   navbar-btn navbar-left" role="button"
+                       id="playNext">
+                        <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+                    </a>
+                </div>
             </div>
         </div>
-        <div id="ss"></div>
+        <small id="song" class="text-center center-block">播放已停止</small>
         <audio controls="controls" autoplay="autoplay" id="audio"></audio>
     </div>
 </nav>
@@ -112,12 +120,12 @@
 
     +function () {
         try {
-            localStorage.setItem("qidizi",1);
-        }catch(e){
+            localStorage.setItem("qidizi", 1);
+        } catch (e) {
             quit("浏览器版本过低，或您使用了隐私模式(不支持)");
             return;
         }
-        
+
         if ('https:' === location.protocol.toLowerCase()) {
             quit('不支持https://');
             return;
@@ -129,15 +137,17 @@
         }
 
         window.onerror = function (msg, src, line, col, e) {
-            alert('O坏了' + JSON.stringify([line,col,msg,src,e]));
+            alert('O坏了' + JSON.stringify([line, col, msg, src, e]));
         };
 
         window.audio = document.getElementById('audio');
-        
-        $(function(){
+
+        $(function () {
             if (plaform.isIos) {
+                // ios volume readonly
+                $('.jsVolumeChange').addClass('disabled');
                 mAlert("因ios家族血脉奇特，客官您可能会遇到浏览器切换到后台后无法自动播放下曲；"
-                    +"某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
+                    + "某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
                 $('body').bind('touchstart', function () {
                     audio.play();
                     $("body").unbind('touchstart');
@@ -176,6 +186,22 @@
 
 
     $(document)
+        .delegate('.jsVolumeChange', 'click', function () {
+            var isUp = $(this).hasClass('isUp');
+            try {
+                var vol = audio.volume + (isUp ? +1 : -1) * 0.05;
+
+                if (vol > 1) vol = 1;
+                else if (vol < 0) vol = 0;
+
+                audio.volume = vol;
+            } catch (e) {
+
+            }
+            $(this).stop().html(String(audio.volume).replace(/(\.\d{2})\d+$/, '$1')).show().delay(1000).show(function () {
+                $(this).html('<span class="glyphicon glyphicon-volume-' + (isUp ? 'up' : 'down') + '" aria-hidden="true"></span>');
+            });
+        })
         .delegate('.jsPlayResultItem', 'click', function () {
             $(this).addClass("active");
             var is = $(this).attr('data-is');
@@ -283,10 +309,11 @@
             json.push(obj);
         });
         json = JSON.stringify(json);
-        try{
+        try {
             // 隐身模式会出错
             localStorage.setItem('djKKPlayList', json);
-        } catch(e) {}
+        } catch (e) {
+        }
     }
 
     // parse song link
