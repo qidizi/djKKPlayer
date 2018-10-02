@@ -23,11 +23,10 @@
 1. ios在浏览器处于background时，js会被系统挂起，无法自动播放下首；但是锁屏时，chrome可以自动下首；其它浏览器未知。
 
 
-编辑书签，[点此打开制作标签操作页](![屏幕截图](https://github.com/qidizi/djKKPlayer/raw/master/screenShot.png)
-)
-，截图
-![屏幕截图](https://github.com/qidizi/djKKPlayer/raw/master/screenShot.png)
+编辑书签，[点此打开制作标签操作页](https://qidizi.github.io/djPlayer/index.html)，截图
+![屏幕截图](https://github.com/qidizi/djKKPlayer/raw/master/index.png)
 
+注入的播放器截图
 
 ![屏幕截图](https://github.com/qidizi/djKKPlayer/raw/master/screenShot.png)
 
