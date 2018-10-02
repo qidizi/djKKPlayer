@@ -1,3 +1,6 @@
++function () {
+    var source = 'http://www.vvvdj.com/';
+    alert(3);return;
 <!DOCTYPE html>
 <html>
 <head>
@@ -476,3 +479,4 @@
 </body>
 </html>
 
+}();

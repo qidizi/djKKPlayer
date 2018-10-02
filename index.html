@@ -1,3 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="referrer" content="never">
+    <style>
+        body {
+            font-size: 62.5%;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .info {
+            padding: 15px;
+            background-color: #fcf8e3;
+            font-size: 1rem;
+        }
+
+        #code {
+            word-break: break-all;
+        }
+
+        .blk-input {
+            display: block;
+            width: 100%;
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 1rem;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+    <title>dj player注入操作步骤 -- By qidizi</title>
+    <meta charset="utf-8">
+    <meta id="scale" content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=0" name="viewport">
+</head>
+<body>
+<h1>步骤1：
+    <small>创建标签</small>
+</h1>
+<p class="info">
+    浏览器一般都不会提供新建空白书签功能；建议先添加本页面成书签，接着编辑时填写以下信息。
+</p>
+<p>
+    名称如下：<span class="blk-input">随意填写</span>
+    网址如下：<a href="" class="blk-input" id="code">右键复制链接地址</a>
+</p>
+<h1>步骤2：
+    <small>使用时点击步骤1创建的标签</small>
+</h1>
+<p class="info">
+    注意留意使用引导提示。
+</p>
 <script>
-	location.href = "dj.player.html";
+    function javascriptCode() {
+        document.write('<' + 'script src="https://raw.githubusercontent.com/qidizi/djPlayer/master/insert.js?r=' + (+new Date) + '"><' + '/script>');
+    }
+
+    var str = String(javascriptCode).replace(/^[^{]+{|\}\s*$/g, '').replace(/[\r\n]+|^\s+|\s+$/gm, '');
+    var code = [];
+
+    for (var i = 0; i < str.length; i++) {
+        code.push(str.charCodeAt(i));
+    }
+    var url = 'javascript:eval(String.fromCharCode(' + code + '));';
+    document.getElementById('code').href = url;
 </script>
+</body>
+</html>
