@@ -1,199 +1,198 @@
+var plaform = {
+    // ios volume readonly
+    isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
+    isMac: 'MacIntel' === navigator.platform,
+    isAndroid: navigator.userAgent.indexOf('Android')
+};
+var source = 'http://www.vvvdj.com/';
+
 +function () {
-    var source = 'http://www.vvvdj.com/';
-    alert(3);return;
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="description" content="dj播放器">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>电小二</title>
-    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    if (window.qidizi) return; // 防止多次注入
+    window.qidizi = true;
+    document.title = 'DJ Player';
 
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
-    <style>
-        .container {
-            max-width: 768px;
-        }
-
-        audio {
-            display: block;
-            width: 100%;
-        }
-
-        .listBody {
-            padding-top: 70px;
-            padding-bottom: 300px;
-        }
-    </style>
-</head>
-<body>
-
-
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <ul class="nav nav-tabs  " role="tablist">
-            <li role="presentation" class="active">
-                <a href="#playListBox" aria-controls="playListBox" role="tab"
-                   data-toggle="tab">
-                    <button class="btn btn-link btn-sm">
-                        <strong class="glyphicon glyphicon-list-alt" aria-hidden="true"></strong>
-                    </button>
-                </a>
-            </li>
-            <li role="presentation">
-                <a href="#resultBox" aria-controls="resultBox" data-toggle="tab">
-                    <form onsubmit="return false;" class="form-inline" style="width: 180px;">
-                    <span class="input-group input-group-sm">
-                        <span class="input-group-addon" role="tab">
-                            <span class="glyphicon glyphicon-music" aria-hidden="true"></span>
-                        </span>
-                        <input class="form-control" placeholder="客官要点啥？" id="keyWord">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit" id="search">
-                                <span class="glyphicon glyphicon-search"
-                                      aria-hidden="true"></span>
-                            </button>
-                        </span>
-                    </span>
-                    </form>
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<div class="tab-content listBody">
-    <div role="tabpanel" class="tab-pane active" id="playListBox">
-        <ul class="list-group" id="playList"></ul>
-    </div>
-    <div role="tabpanel" class="tab-pane" id="resultBox">
-        <ul class="list-group" id="result"></ul>
-    </div>
-</div>
-<nav class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="btn-group btn-group-justified" role="group">
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown"
-                                type="button">
-                            <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp"
-                                type="button">
-                            <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-danger  navbar-btn navbar-left" type="button"
-                                id="deletePlay">
-                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default   navbar-btn navbar-left" type="button"
-                                id="playNext">
-                            <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <small id="song" class="text-center center-block">播放已停止</small>
-        <audio controls="controls" autoplay="autoplay" id="audio"></audio>
-    </div>
-</nav>
-<script>
-    plaform = {
-        // ios volume readonly
-        isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
-        isMac: 'MacIntel' === navigator.platform,
-        isAndroid: navigator.userAgent.indexOf('Android')
-    };
-    var proxy = 'http://qidizi.d.iguoyi.cn/';
-    //var proxy = 'http://php.local.qidizi.com/curl.php';
-    var pwd = location.search.match(/^.*password\=([^\=&]+).*$/i);
-    pwd = pwd ? pwd[1] : '';
-
-    function quit(tip) {
-        document.documentElement.innerHTML = tip;
+    if (!location.hostname || source.toLowerCase().indexOf(location.hostname.toLowerCase()) < 0) {
+        var delay = 5;
+        quit('页面完成后，请<strong style="color: red;" >再次点击标签</strong>，注入播放器<br>' +
+            delay + '秒后自动打开<a href="' + source + '">' + source + '</a>');
+        setTimeout(function () {
+            location.href = source + '?r=' + +new Date;
+        }, delay * 1000);
+        return;
     }
 
-    +function () {
-        try {
-            localStorage.setItem("qidizi", 1);
-        } catch (e) {
-            quit("浏览器版本过低，或您使用了隐私模式(不支持)");
-            return;
-        }
+    createDom('html');
+    createDom('head', null, 'html');
+    createDom('body', null, 'html');
+    createDom('script', {
+        src: 'https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js',
+        type: 'text/javascript'
+    }, 'head');
+    createDom('meta', {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+    });
+    createDom('link', {
+        rel: 'stylesheet',
+        href: 'https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css'
+    });
+    createDom('link', {
+        rel: 'stylesheet',
+        href: 'https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap-theme.min.css'
+    });
+    createDom('script', {
+        src: 'https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js'
+    });
+    createDom('style', {
+        type: 'text/css'
+    }).appendChild(document.createTextNode(
+        '.container{max-width:768px;}' +
+        'audio{display: block;width:100%;}' +
+        '.listBody{padding-top:70px;padding-bottom:300px;}'
+    ));
+    document.body.innerHTML = '<nav class="navbar navbar-default navbar-fixed-top">\n' +
+        '    <div class="container" style>\n' +
+        '        <ul class="nav nav-tabs  " role="tablist">\n' +
+        '            <li role="presentation" class="active">\n' +
+        '                <a href="#playListBox" aria-controls="playListBox" role="tab"\n' +
+        '                   data-toggle="tab">\n' +
+        '                    <button class="btn btn-link btn-sm">\n' +
+        '                        <strong class="glyphicon glyphicon-list-alt" aria-hidden="true"></strong>\n' +
+        '                    </button>\n' +
+        '                </a>\n' +
+        '            </li>\n' +
+        '            <li role="presentation">\n' +
+        '                <a href="#resultBox" aria-controls="resultBox" data-toggle="tab">\n' +
+        '                    <form onsubmit="return false;" class="form-inline" style="width: 180px;">\n' +
+        '        <span class="input-group input-group-sm">\n' +
+        '        <span class="input-group-addon" role="tab">\n' +
+        '        <span class="glyphicon glyphicon-music" aria-hidden="true"></span>\n' +
+        '        </span>\n' +
+        '        <input class="form-control" placeholder="客官要点啥？" id="keyWord">\n' +
+        '        <span class="input-group-btn">\n' +
+        '        <button class="btn btn-default" type="submit" id="search">\n' +
+        '        <span class="glyphicon glyphicon-search"\n' +
+        '              aria-hidden="true"></span>\n' +
+        '        </button>\n' +
+        '        </span>\n' +
+        '        </span>\n' +
+        '                    </form>\n' +
+        '                </a>\n' +
+        '            </li>\n' +
+        '        </ul>\n' +
+        '    </div>\n' +
+        '</nav>\n' +
+        '<div class="tab-content listBody">\n' +
+        '    <div role="tabpanel" class="tab-pane active" id="playListBox">\n' +
+        '        <ul class="list-group" id="playList"></ul>\n' +
+        '    </div>\n' +
+        '    <div role="tabpanel" class="tab-pane" id="resultBox">\n' +
+        '        <ul class="list-group" id="result"></ul>\n' +
+        '    </div>\n' +
+        '</div>\n' +
+        '<nav class="navbar navbar-default navbar-fixed-bottom">\n' +
+        '    <div class="container">\n' +
+        '        <div class="row">\n' +
+        '            <div class="col-xs-12">\n' +
+        '                <div class="btn-group btn-group-justified" role="group">\n' +
+        '                    <div class="btn-group" role="group">\n' +
+        '                        <button class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown"\n' +
+        '                                type="button">\n' +
+        '                            <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>\n' +
+        '                        </button>\n' +
+        '                    </div>\n' +
+        '                    <div class="btn-group" role="group">\n' +
+        '                        <button class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp"\n' +
+        '                                type="button">\n' +
+        '                            <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>\n' +
+        '                        </button>\n' +
+        '                    </div>\n' +
+        '                    <div class="btn-group" role="group">\n' +
+        '                        <button class="btn btn-danger  navbar-btn navbar-left" type="button"\n' +
+        '                                id="deletePlay">\n' +
+        '                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>\n' +
+        '                        </button>\n' +
+        '                    </div>\n' +
+        '                    <div class="btn-group" role="group">\n' +
+        '                        <button class="btn btn-default   navbar-btn navbar-left" type="button"\n' +
+        '                                id="playNext">\n' +
+        '                            <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>\n' +
+        '                        </button>\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '        <small id="song" class="text-center center-block">播放已停止</small>\n' +
+        '        <audio controls="controls" autoplay="autoplay" id="audio"></audio>\n' +
+        '    </div>\n' +
+        '</nav>\n' +
+        '<div class="modal fade" tabindex="-1" id="modal" role="dialog">\n' +
+        '    <div class="modal-dialog" role="document">\n' +
+        '        <div class="modal-content">\n' +
+        '            <div class="modal-header">\n' +
+        '                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span\n' +
+        '                        aria-hidden="true">&times;</span>\n' +
+        '                </button>\n' +
+        '                <h4 class="modal-title">title</h4>\n' +
+        '            </div>\n' +
+        '            <div class="modal-body"></div>\n' +
+        '            <div class="modal-footer">\n' +
+        '                <button type="button" class="btn btn-default" data-dismiss="modal">\n' +
+        '                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>\n' +
+        '                </button>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>\n' +
+        '</div>';
 
-        if ('https:' === location.protocol.toLowerCase()) {
-            quit('不支持https://');
-            return;
-        }
+    try {
+        localStorage.setItem("TEST", 1);
+    } catch (e) {
+        quit("浏览器版本过低，或您使用了隐私模式：无法使用自动保存播放列表功能");
+        return;
+    }
 
-        if (!pwd) {
-            quit('缺少授权密码，请通过如下url格式访问 <br>' + location.href.replace(/[\?#]+.*/gi, '') + '?password=您的访问密码');
-            return;
-        }
+    window.onerror = function (msg, src, line, col, e) {
+        //alert('O坏了' + JSON.stringify([line, col, msg, src, e]));
+    };
 
-        window.onerror = function (msg, src, line, col, e) {
-            alert('O坏了' + JSON.stringify([line, col, msg, src, e]));
-        };
+    window.audio = document.getElementById('audio');
+    init();
+}();
 
-        window.audio = document.getElementById('audio');
+function init() {
+    if (!window.jQuery) {
+        setTimeout(init, 500);
+        return;
+    }
 
-        $(function () {
-            if (plaform.isIos) {
-                // ios volume readonly
-                $('.jsVolumeChange').addClass('disabled');
-                mAlert("因ios家族血脉奇特，客官您可能会遇到浏览器切换到后台后无法自动播放下曲；"
-                    + "某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
-                $('body').bind('touchstart', function () {
-                    audio.play();
-                    $("body").unbind('touchstart');
-                });
-            }
+    if (plaform.isIos) {
+        // ios volume readonly
+        $('.jsVolumeChange').addClass('disabled');
+        mAlert("因ios家族血脉奇特，客官您可能会遇到浏览器切换到后台后无法自动播放下曲；"
+            + "某些版本第一次点击歌曲的播放后只是加载歌曲却不会自动开始播放，需要点击播放器上的才会播放的问题。");
+        $('body').once('touchstart', function () {
+            audio.play();
         });
+    }
 
-        // ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；
-        audio.onended = playNext;
+    // ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；
+    audio.onended = playNext;
 
-        /*
-        setInterval(function () {
-            var play = audio.currentTime||0;
-            var end = audio.duration||0;
+    try {
+        var list = new Function('', 'return ' + localStorage.getItem('qidiziDjPlayer'))();
 
-            if (play > 5) playNext();
-        }, 2000);
-        */
-
-        try {
-            var list = new Function('', 'return ' + localStorage.getItem('djKKPlayList'))();
-
-            if ('object' === typeof list) {
-                var html = '';
-                for (var i = 0; i < list.length; i++) {
-                    var li = list[i];
-                    html += listLi(li.s, li.t, li.p ? 'list-group-item-success' : "");
-                }
-                $('#playList').html(html);
+        if ('object' === typeof list) {
+            var html = '';
+            for (var i = 0; i < list.length; i++) {
+                var li = list[i];
+                html += listLi(li.s, li.t, li.p ? 'list-group-item-success' : "");
             }
-        } catch (e) {
-
+            $('#playList').html(html);
         }
+    } catch (e) {
 
-    }();
+    }
 
 
     $(document)
@@ -215,36 +214,9 @@
         })
         .delegate('.jsPlayResultItem', 'click', function () {
             $(this).addClass("active");
-            var is = $(this).attr('data-is');
-            var href = $(this).parents('li').attr('data-href');
-            getSource(href, function (code) {
-
-                code = $.trim(code.replace(/^[\S\s]+var list\=/gi, '').replace(/<\/script>[\s\S]+$/gi, ''));
-
-                if ('' === code) {
-                    mAlert('找不到播放地址，请联系作者修复');
-                    return;
-                }
-
-                var obj = new Function('', 'try{var s_str = "http://mx.djkk.com/mix";var list = ' + code + ';return list[0];}catch(e){}')();
-
-                if (!obj) {
-                    mAlert('获取播放地址异常，请联系作者修复');
-                    return;
-                }
-
-                var title = obj.title;
-                var src = obj.m4a;
-                var li = $('li[data-href="' + src + '"]');
-
-                if ('test' !== is && !li.length) {
-                    li = $(listLi(src, title));
-                    li.appendTo('#playList');
-                    saveList();
-                }
-
-                'append' !== is && playMe(src, title, li);
-            });
+            var li = $(this).parents('li');
+            var href = li.attr('data-href');
+            getMusic(href, li);
         })
         .delegate('.jsRemoveMe', 'click', function () {
             var li = $(this).parents('li');
@@ -284,199 +256,252 @@
                 return;
             }
 
-            getPage({keyword: word});
+            getSearch('http://www.vvvdj.com/search/so?key=' + encodeURIComponent(word));
         })
         .delegate('.jsNextPage', 'click', function () {
             var href = $(this).attr('data-href');
-            getPage(href);
+            getSearch(href);
         })
     ;
 
+}
 
-    function listLi(src, title, cls) {
-        return '<li class="list-group-item ' + (cls || '') + '"  data-href="' + src + '">' +
-            ' <button class="btn btn-danger jsRemoveMe"  type="button" >' +
-            '<i class="glyphicon glyphicon-trash" aria-hidden="true"></i> ' +
-            '</button> ' +
-            '<a class="jsPlayMe" href="javascript:void(0);">' +
-            '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
-            title +
-            '</a> ' +
-            '</li>';
+function listLi(src, title, cls) {
+    return '<li class="list-group-item ' + (cls || '') + '"  data-href="' + src + '">' +
+        ' <button class="btn btn-danger jsRemoveMe"  type="button" >' +
+        '<i class="glyphicon glyphicon-trash" aria-hidden="true"></i> ' +
+        '</button> ' +
+        '<a class="jsPlayMe" href="javascript:void(0);">' +
+        '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
+        title +
+        '</a> ' +
+        '</li>';
+}
+
+function saveList() {
+    var json = [];
+    $('#playList li').each(function () {
+        var obj = {
+            t: $(this).text(),
+            s: $(this).data('href')
+        };
+
+        if ($(this).hasClass('isPlaying')) {
+            obj.p = 1;
+        }
+
+        json.push(obj);
+    });
+    json = JSON.stringify(json);
+    try {
+        // 隐身模式会出错
+        localStorage.setItem('qidiziDjPlayer', json);
+    } catch (e) {
     }
+}
 
-    function saveList() {
-        var json = [];
-        $('#playList li').each(function () {
-            var obj = {
-                t: $(this).text(),
-                s: $(this).data('href')
-            };
-
-            if ($(this).hasClass('isPlaying')) {
-                obj.p = 1;
+function getMusic(href, dom) {
+    $.ajax({
+        url: href,
+        type: 'POST',
+        cache: false,
+        dataType: 'text',
+        success: function (body) {
+            var code = body;
+            try {
+                // 对方不清楚基于什么实现，主要是ajax请求就会返回json
+                code = new Function('', 'return ' + code)();
+            } catch (e) {
+                code = body;
             }
 
-            json.push(obj);
-        });
-        json = JSON.stringify(json);
-        try {
-            // 隐身模式会出错
-            localStorage.setItem('djKKPlayList', json);
-        } catch (e) {
-        }
-    }
+            code = code.replace(/^[\S\s]+var\s+PLAYINGID\s*=/gi, 'var PLAYINGID = ')
+                .replace(/<\/script>[\s\S]+$/gi, '')
+                .replace(/^\s*LoveHover/m, '//')
+            //.replace(/mp.create[\s\S]+$/gi, '')
+            ;
+            code = $.trim(code);
 
-    // parse song link
-    function getPage(get) {
-        $('#result').html('<li class="list-group-item text-info">' +
-            '<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span> 处理中...' +
-            '</li>');
-        var url = 'http://www.djkk.com/search.html';
-        $('#keyWord').attr('readonly', 'readonly');
-        getSource(url, function (code) {
-            $('#keyWord').removeAttr('readonly');
-
-            if (!code) {
-                $('#result').html('<li class="list-group-item text-success">' +
-                    'ooops!好像出了点意外哦！什么都没有...' +
-                    '</li>');
+            if ('' === code) {
+                mAlert('找不到播放地址，请联系作者修复');
                 return;
             }
 
+            // 模仿对方逻辑获取url
+            var src;
+            code = 'var fwqrp = "dj";\n' +
+                'var fwqhp = "th";\n' +
+                'var fwq3g = "tm";\n' +
+                'var x4 = "";' +
+                'var playurl = "";' +
+                'var mp={create:function(a,apsvr,file){' +
+                'playurl = "http://" + apsvr + ".vvvdj.com/mp4/" + file + ".mp4";' +
+                '}};' +
+                '' +
+                'try{' +
+                code + ';' +
+                '}catch(e){};' +
+                'return playurl;';
+            try {
+                src = new Function('', code)();
+            } catch (e) {
+            }
+
+            if (!src) {
+                mAlert('获取播放地址异常，请联系作者修复');
+                return;
+            }
+
+            var is = $(dom).attr('data-is');
+            var title = $.trim(dom.text());
+            var li = $('li[data-href="' + src + '"]');
+
+            if ('test' !== is && !li.length) {
+                li = $(listLi(src, title));
+                li.appendTo('#playList');
+                saveList();
+            }
+
+            'append' !== is && playMe(src, title, li);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            mAlert('获取播放地址异常，请联系作者修复[' + textStatus + ']');
+        }
+    });
+}
+
+function getSearch(url) {
+    $('#result').html('<li class="list-group-item text-info">' +
+        '<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span> 处理中...' +
+        '</li>');
+    $('#keyWord').attr('readonly', 'readonly');
+    $.ajax({
+        url: url,
+        type: 'POST',
+        cache: false,
+        success: function (body) {
+            var code = body;
+            try {
+                // 对方不清楚基于什么实现，主要是ajax请求就会返回json
+                code = new Function('', 'return ' + code)();
+            } catch (e) {
+                code = body;
+            }
+
             var links = '';
-            code.replace(/^[\s\S]+?wq_cententser|id="footmain"[\s\S]+?$/g, '')
-                .replace(/<a\s[^>]*?href\s*=\s*['"]([^"']+)['"][^>]*>([\s\S]+?)<\/a[>\s]/ig, function (m0, href, text) {
-                    // only text,remove html tag
-                    text = $.trim(text.replace(/<[^>]+>/, ''));
+            var nameHash = {};
+            code = code.replace(/^[\s\S]+?<table[^>]+list_musiclist|左侧结束[\s\S]+?$|<a[^>]+href\s*=\s*['"]*javascript:[\s\S]+?<\/a[^>]*>/ig, '');
+            var pages = '';
+            code.replace(/<a\s[^>]*?href\s*=\s*['"]([^"']+)['"][^>]*>([\s\S]+?)<\/a[>\s]/ig, function (m0, href, text) {
+                // only text,remove html tag
+                text = $.trim(text.replace(/<[^>]+>/, ''));
 
-                    if (/\/play\/\d+\.html/i.test(href)) {
-                        // get the song url
-                        href = 'http://www.djkk.com/' + href.replace(/^\.+\//, '');
-                        links += '<li class="list-group-item"  data-href="' + href + '">' +
-                            ' <button type="button" class="btn btn-default jsPlayResultItem" data-is="test">' +
-                            '<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> ' +
-                            '</button> ' +
+                if (/\/play\/\d+\.html/i.test(href)) {
+                    // get the song url
+                    // 只需要有标题的
+                    if (!text || nameHash[text]) return '';
+                    nameHash[text] = 1;
+                    href = source + href.replace(/^\.+\//, '');
+                    links += '<li class="list-group-item"  data-href="' + href + '">' +
+                        ' <button type="button" class="btn btn-default jsPlayResultItem" data-is="test">' +
+                        '<span class="glyphicon glyphicon-headphones" aria-hidden="true"></span> ' +
+                        '</button> ' +
 
-                            ' <button type="button" class="btn btn-default jsPlayResultItem" data-is="append">' +
-                            '<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> ' +
-                            '</button> ' +
-                            '<button type="button" class="btn btn-default jsPlayResultItem" data-is="play">' +
-                            '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
-                            '</button> ' +
-                            text +
-                            '</li>';
-                    } else if (new RegExp('&keyword=[^&]+', 'i').test(href)) {
-                        links += '<li class="list-group-item jsNextPage btn btn-primary"  data-href="' + href + '">' +
-                            text +
-                            '</li>';
-                    }
-                    return '';
-                });
+                        ' <button type="button" class="btn btn-default jsPlayResultItem" data-is="append">' +
+                        '<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> ' +
+                        '</button> ' +
+                        '<button type="button" class="btn btn-default jsPlayResultItem" data-is="play">' +
+                        '<span class="glyphicon glyphicon-play" aria-hidden="true"></span> ' +
+                        '</button> &nbsp;' +
+                        text +
+                        '</li>';
+                } else if (/so\?key=[^&]+/i.test(href)) {
+                    pages += '<button class="btn btn-default jsNextPage" data-href="' + source + 'search/' + href + '">' +
+                        text +
+                        '</button>'
+                    ;
+                }
+                return '';
+            });
 
             if (!links) {
                 links += '<li class="list-group-item text-danger">' +
                     '<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> 客官久等了，很抱歉，您要的...已向警方报失。要不试试...' +
                     '</li>';
+            } else {
+                links += '<li class="list-group-item text-center  list-group-item-success">' +
+                    pages +
+                    '</li>';
             }
 
             $('#result').html(links);
-        }, get);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            $('#result').html('<li class="list-group-item text-success">' +
+                'ooops!好像出了点意外哦！什么都没有...[' + textStatus + ']' +
+                '</li>');
+        },
+        complete: function () {
+            $('#keyWord').removeAttr('readonly');
+        },
+        dataType: 'text'
+    });
+}
+
+function playNext() {
+    // empty list
+    if (!$('#playList li').length) return;
+
+    var li = $('#playList li.isPlaying');
+
+    if (li.length) {
+        // has playing
+        li = li.next();
     }
 
-    function playNext() {
-        // empty list
-        if (!$('#playList li').length) return;
-
-        var li = $('#playList li.isPlaying');
-
-        if (li.length) {
-            // has playing
-            li = li.next();
-        }
-
-        if (!li.length) {
-            // stop ? first item
-            li = $('#playList li:first');
-        }
-
-        var src = li.attr('data-href');
-        playMe(src, li.text(), li);
+    if (!li.length) {
+        // stop ? first item
+        li = $('#playList li:first');
     }
 
-    function playMe(src, title, li) {
-        if (!src) return;
-        var playCls = 'list-group-item-success isPlaying';
-        $('#playList li').removeClass(playCls);
-        $(li).addClass(playCls);
-        $('#song').text(document.title = title);
-        var audio = $('audio').get(0);
-        audio.src = src;
-        audio.play();
-        saveList();
-    }
+    var src = li.attr('data-href');
+    playMe(src, li.text(), li);
+}
 
-    function getSource(uri, cb, get, post) {
-        if ('string' === typeof get) {
-            get = get.replace(/^\?+/, '');
-        } else if ('object' === $.type(get)) {
-            get = $.param(get);
-        } else {
-            get = '';
-        }
+function playMe(src, title, li) {
+    if (!src) return;
+    var playCls = 'list-group-item-success isPlaying';
+    $('#playList li').removeClass(playCls);
+    $(li).addClass(playCls);
+    $('#song').text(document.title = title);
+    var audio = $('audio').get(0);
+    audio.src = src;
+    audio.play();
+    saveList();
+}
 
-        if (get) {
-            get += '&';
-        }
 
-        get += '_c=GBK&_p=' + encodeURIComponent(pwd) + '&_u=' + encodeURIComponent(uri);
-        get = proxy + '?' + get;
-        $.ajax({
-            url: get,
-            cache: false,
-            data: post,
-            dataType: 'json',
-            success: function (res) {
-                cb(res.data ? res.data.response : null);
+function mAlert(msg, title) {
+    $('#modal .modal-body').html(msg);
+    $('#modal .modal-title').text(title || 'notice');
+    $('#modal').modal();
+}
 
-                if ('success' !== res.code) {
-                    mAlert(res.msg);
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                cb(textStatus);
-                mAlert(get + '<br>' + textStatus);
-            },
-            type: 'POST'
-        });
-    }
+function createDom(tag, attr, parentTag) {
+    var dom = document.createElement(tag);
+    if (attr)
+        for (var name in attr) dom.setAttribute(name, attr[name]);
+    (parentTag ? document.getElementsByTagName(parentTag)[0] : document.documentElement).appendChild(dom);
+    return dom;
+}
 
-    function mAlert(msg, title) {
-        $('#modal .modal-body').html(msg);
-        $('#modal .modal-title').text(title || 'notice');
-        $('#modal').modal();
-    }
-</script>
-
-<div class="modal fade" tabindex="-1" id="modal" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">title</h4>
-            </div>
-            <div class="modal-body"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-</body>
-</html>
-
-}();
+function quit(tip) {
+    document.open();
+    document.write(
+        '<!DOCTYPE html><html><head>' +
+        '<meta charset="utf-8">' +
+        '<title>提示</title></head><body>' +
+        tip + '</body></html>'
+    );
+    document.close();
+}
