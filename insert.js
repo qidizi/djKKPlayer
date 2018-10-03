@@ -8,10 +8,10 @@ var source = 'vvvdj.com';
 
 +function () {
     if (window.qidizi) return; // 防止多次注入
-    window.qidizi = true;
+    window.qidizi = {};
     document.title = 'DJ Player';
 
-    if (!location.hostname || source.toLowerCase().indexOf(location.hostname.replace(/^.*?([^\.]+\.[^\.]+)$/,"$1").toLowerCase()) < 0) {
+    if (!location.hostname || location.hostname.toLowerCase().indexOf(source) < 0) {
         var delay = 5;
         quit('页面完成后，请<strong style="color: red;" >再次点击标签</strong>，注入播放器<br>' +
             delay + '秒后自动打开<a href="' + source + '">' + source + '</a>');
@@ -253,12 +253,12 @@ function init() {
                     '</li>');
                 return;
             }
-
-            getSearch(source + '/search/so?key=' + encodeURIComponent(word));
+            
+            qidizi.word = word;
+            getSearch(1);
         })
         .delegate('.jsNextPage', 'click', function () {
-            var href = $(this).attr('data-href');
-            getSearch(href);
+            getSearch(this.value);
         })
     ;
 
@@ -368,11 +368,12 @@ function getMusic(href, dom) {
     });
 }
 
-function getSearch(url) {
+function getSearch(page) {
     $('#result').html('<li class="list-group-item text-info">' +
         '<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span> 处理中...' +
         '</li>');
     $('#keyWord').attr('readonly', 'readonly');
+    var url = source + "/search/so?key=" + encodeURIComponent(word) + "&page=" + (page||1);
     $.ajax({
         url: url,
         type: 'POST',
@@ -413,8 +414,8 @@ function getSearch(url) {
                         '</button> &nbsp;' +
                         text +
                         '</li>';
-                } else if (/so\?key=[^&]+/i.test(href)) {
-                    pages += '<button class="btn btn-default jsNextPage" data-href="' + source + 'search/' + href + '">' +
+                } else if (/so\?key=[^&]+/i.test(href) && /^\d+$/.test(text)) {
+                    pages += '<button class="btn btn-default jsNextPage" value="' + text + '">' +
                         text +
                         '</button>'
                     ;
@@ -427,6 +428,12 @@ function getSearch(url) {
                     '<span class="glyphicon glyphicon-alert" aria-hidden="true"></span> 客官久等了，很抱歉，您要的...已向警方报失。要不试试...' +
                     '</li>';
             } else {
+                pages = '<button class="btn btn-default jsNextPage" value="1">' +
+                '<span class="glyphicon glyphicon-step-backward"></span>' +
+                 '</button>' +
+                 pages +
+                 '<button class="btn btn-default jsNextPage" value="1">' +
+                '<span class="glyphicon glyphicon-option-horizontal"></span>';
                 links += '<li class="list-group-item text-center  list-group-item-success">' +
                     pages +
                     '</li>';
