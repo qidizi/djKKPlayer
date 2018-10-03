@@ -27,7 +27,7 @@ var source = 'vvvdj.com';
     createDom('head', null, 'html');
     createDom('body', null, 'html');
     createDom('script', {
-        src: 'https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js',
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
         type: 'text/javascript'
     }, 'head');
     createDom('meta', {
@@ -36,14 +36,14 @@ var source = 'vvvdj.com';
     });
     createDom('link', {
         rel: 'stylesheet',
-        href: 'https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css'
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css'
     });
     createDom('link', {
         rel: 'stylesheet',
-        href: 'https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap-theme.min.css'
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css'
     });
     createDom('script', {
-        src: 'https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js'
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/js/bootstrap.min.js'
     });
     createDom('style', {
         type: 'text/css'
