@@ -4,23 +4,25 @@ var plaform = {
     isMac: 'MacIntel' === navigator.platform,
     isAndroid: navigator.userAgent.indexOf('Android')
 };
-var source = 'http://www.vvvdj.com/';
+var source = 'vvvdj.com';
 
 +function () {
     if (window.qidizi) return; // 防止多次注入
     window.qidizi = true;
     document.title = 'DJ Player';
 
-    if (!location.hostname || source.toLowerCase().indexOf(location.hostname.toLowerCase()) < 0) {
+    if (!location.hostname || source.toLowerCase().indexOf(location.hostname.replace(/^.*?([^\.]+\.[^\.]+)$/,"$1").toLowerCase()) < 0) {
         var delay = 5;
         quit('页面完成后，请<strong style="color: red;" >再次点击标签</strong>，注入播放器<br>' +
             delay + '秒后自动打开<a href="' + source + '">' + source + '</a>');
         setTimeout(function () {
-            location.href = source + '?r=' + +new Date;
+            location.href = "http://"+source + '?r=' + +new Date;
         }, delay * 1000);
         return;
     }
 
+	// 可能子域是www或是m
+	source = location.href.replace(/^([^:]+:\/+[^\/]+).*/,"$1");
     createDom('html');
     createDom('head', null, 'html');
     createDom('body', null, 'html');
@@ -152,10 +154,6 @@ var source = 'http://www.vvvdj.com/';
         return;
     }
 
-    window.onerror = function (msg, src, line, col, e) {
-        //alert('O坏了' + JSON.stringify([line, col, msg, src, e]));
-    };
-
     window.audio = document.getElementById('audio');
     init();
 }();
@@ -256,7 +254,7 @@ function init() {
                 return;
             }
 
-            getSearch('http://www.vvvdj.com/search/so?key=' + encodeURIComponent(word));
+            getSearch(source + '/search/so?key=' + encodeURIComponent(word));
         })
         .delegate('.jsNextPage', 'click', function () {
             var href = $(this).attr('data-href');
