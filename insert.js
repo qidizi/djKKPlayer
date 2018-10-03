@@ -23,9 +23,6 @@ var source = 'vvvdj.com';
 
 	// 可能子域是www或是m
 	source = location.href.replace(/^([^:]+:\/+[^\/]+).*/,"$1");
-    createDom('html');
-    createDom('head', null, 'html');
-    createDom('body', null, 'html');
     createDom('script', {
         src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
         type: 'text/javascript'
@@ -494,9 +491,6 @@ function mAlert(msg, title) {
 }
 
 function createDom(tag, attr, parentTag) {
-	// 特殊标签不能重复出现
-	if ('.html.head.body.'.indexOf('.' + tag + '.') > -1)
-	    return document.getElementsByTagName(tag)[0];
     var dom = document.createElement(tag);
     if (attr)
         for (var name in attr) dom.setAttribute(name, attr[name]);
