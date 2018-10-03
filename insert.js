@@ -1,16 +1,5 @@
-var plaform = {
-    // ios volume readonly
-    isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
-    isMac: 'MacIntel' === navigator.platform,
-    isAndroid: navigator.userAgent.indexOf('Android')
-};
-var source = 'vvvdj.com';
-
 +function () {
-    if (window.qidizi) return; // 防止多次注入
-    window.qidizi = {};
-    document.title = 'DJ Player';
-
+	var source = 'vvvdj.com';
     if (!location.hostname || location.hostname.toLowerCase().indexOf(source) < 0) {
         var delay = 5;
         quit('页面完成后，请<strong style="color: red;" >再次点击标签</strong>，注入播放器<br>' +
@@ -20,132 +9,105 @@ var source = 'vvvdj.com';
         }, delay * 1000);
         return;
     }
+    makePlayer();
+}();
 
+function makePlayer(){
+    var html ='\
+<!DOCTYPE html> \
+<html> \
+<head> \
+<title>DJ Player</title> \
+<meta charset="UTF-8"> \
+<meta id="scale" content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=0" name="viewport"> \
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script> \
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css" /> \
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css" /> \
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script> \
+<style> \
+.container{max-width:768px;} \
+audio{display: block;width:100%;} \
+.listBody{padding-top:70px;padding-bottom:300px;} \
+</style> \
+</head> \
+<body> \
+<nav class="navbar navbar-default navbar-fixed-top"> \
+ <div class="container"> \
+  <ul class="nav nav-tabs  " role="tablist"> \
+    <li role="presentation" class="active"> \
+     <a href="#playListBox" aria-controls="playListBox" role="tab" data-toggle="tab"> \
+     <button class="btn btn-link btn-sm"> \
+     <b class="glyphicon glyphicon-list-alt"></b> \
+     </button> \
+        </a> \
+ </li> \
+ <li role="presentation"> \
+   <a href="#resultBox" aria-controls="resultBox" data-toggle="tab"> \
+    <form onsubmit="return false;" class="form-inline" style="width: 180px;"> \
+    <span class="input-group input-group-sm"> \
+    <span class="input-group-addon" role="tab"> \
+    <span class="glyphicon glyphicon-music"></span> \
+    </span> \
+    <input class="form-control" placeholder="客官要点啥？" id="keyWord"> \
+   <span class="input-group-btn"> \
+    <button class="btn btn-default" type="submit" id="search"> \
+    <span class="glyphicon glyphicon-search"></span> \
+    </button> \
+   </span> \
+   </span> \
+ </form> \
+ </a> \
+</li> \
+ </ul> \
+ </div> \
+</nav> \
+<div class="tab-content listBody"> \
+ <div role="tabpanel" class="tab-pane active" id="playListBox"> \
+ <ul class="list-group" id="playList"></ul> \
+ </div> \
+<div role="tabpanel" class="tab-pane" id="resultBox"> \
+ <ul class="list-group" id="result"></ul> \
+</div> \
+</div> \
+<nav class="navbar navbar-default navbar-fixed-bottom"> \
+ <div class="container"> \
+ <div class="row"> \
+ <div class="col-xs-12"> \
+ <div class="btn-group btn-group-justified" role="group"> \
+ <div class="btn-group" role="group"> \
+ <button class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown" type="button"> \
+<span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span> \
+</button> \
+</div> \
+<div class="btn-group" role="group"> \
+<button class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp" type="button"> \
+<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span> \
+</button> \
+ </div> \
+<div class="btn-group" role="group"> \
+<button class="btn btn-danger  navbar-btn navbar-left" type="button" id="deletePlay"> \
+<span class="glyphicon glyphicon-trash"></span> \
+</button> \
+ </div> \
+<div class="btn-group" role="group"> \
+<button class="btn btn-default   navbar-btn navbar-left" type="button" id="playNext"> \
+<span class="glyphicon glyphicon-step-forward"></span> \
+ </button> \
+</div> \
+</div> \
+</div> \
+</div> \
+<small id="song" class="text-center center-block">播放已停止</small> \
+<audio controls="controls" autoplay="autoplay" id="audio"></audio> \
+</div> \
+</nav> \
+';
+}
+
+function javascript() {
 	// 可能子域是www或是m
-	source = location.href.replace(/^([^:]+:\/+[^\/]+).*/,"$1");
-    createDom('script', {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
-        type: 'text/javascript'
-    }, 'head');
-    createDom('meta', {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
-    });
-    
-    createDom('link', {
-        rel: 'stylesheet',
-        href: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css'
-    });
-    createDom('link', {
-        rel: 'stylesheet',
-        href: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css'
-    });
-    createDom('script', {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/js/bootstrap.min.js'
-    });
-    createDom('style', {
-        type: 'text/css'
-    }).appendChild(document.createTextNode(
-        '.container{max-width:768px;}' +
-        'audio{display: block;width:100%;}' +
-        '.listBody{padding-top:70px;padding-bottom:300px;}'
-    ));
-    document.body.innerHTML = '<nav class="navbar navbar-default navbar-fixed-top">\n' +
-        '    <div class="container" style>\n' +
-        '        <ul class="nav nav-tabs  " role="tablist">\n' +
-        '            <li role="presentation" class="active">\n' +
-        '                <a href="#playListBox" aria-controls="playListBox" role="tab"\n' +
-        '                   data-toggle="tab">\n' +
-        '                    <button class="btn btn-link btn-sm">\n' +
-        '                        <strong class="glyphicon glyphicon-list-alt" aria-hidden="true"></strong>\n' +
-        '                    </button>\n' +
-        '                </a>\n' +
-        '            </li>\n' +
-        '            <li role="presentation">\n' +
-        '                <a href="#resultBox" aria-controls="resultBox" data-toggle="tab">\n' +
-        '                    <form onsubmit="return false;" class="form-inline" style="width: 180px;">\n' +
-        '        <span class="input-group input-group-sm">\n' +
-        '        <span class="input-group-addon" role="tab">\n' +
-        '        <span class="glyphicon glyphicon-music" aria-hidden="true"></span>\n' +
-        '        </span>\n' +
-        '        <input class="form-control" placeholder="客官要点啥？" id="keyWord">\n' +
-        '        <span class="input-group-btn">\n' +
-        '        <button class="btn btn-default" type="submit" id="search">\n' +
-        '        <span class="glyphicon glyphicon-search"\n' +
-        '              aria-hidden="true"></span>\n' +
-        '        </button>\n' +
-        '        </span>\n' +
-        '        </span>\n' +
-        '                    </form>\n' +
-        '                </a>\n' +
-        '            </li>\n' +
-        '        </ul>\n' +
-        '    </div>\n' +
-        '</nav>\n' +
-        '<div class="tab-content listBody">\n' +
-        '    <div role="tabpanel" class="tab-pane active" id="playListBox">\n' +
-        '        <ul class="list-group" id="playList"></ul>\n' +
-        '    </div>\n' +
-        '    <div role="tabpanel" class="tab-pane" id="resultBox">\n' +
-        '        <ul class="list-group" id="result"></ul>\n' +
-        '    </div>\n' +
-        '</div>\n' +
-        '<nav class="navbar navbar-default navbar-fixed-bottom">\n' +
-        '    <div class="container">\n' +
-        '        <div class="row">\n' +
-        '            <div class="col-xs-12">\n' +
-        '                <div class="btn-group btn-group-justified" role="group">\n' +
-        '                    <div class="btn-group" role="group">\n' +
-        '                        <button class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown"\n' +
-        '                                type="button">\n' +
-        '                            <span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span>\n' +
-        '                        </button>\n' +
-        '                    </div>\n' +
-        '                    <div class="btn-group" role="group">\n' +
-        '                        <button class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp"\n' +
-        '                                type="button">\n' +
-        '                            <span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>\n' +
-        '                        </button>\n' +
-        '                    </div>\n' +
-        '                    <div class="btn-group" role="group">\n' +
-        '                        <button class="btn btn-danger  navbar-btn navbar-left" type="button"\n' +
-        '                                id="deletePlay">\n' +
-        '                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>\n' +
-        '                        </button>\n' +
-        '                    </div>\n' +
-        '                    <div class="btn-group" role="group">\n' +
-        '                        <button class="btn btn-default   navbar-btn navbar-left" type="button"\n' +
-        '                                id="playNext">\n' +
-        '                            <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>\n' +
-        '                        </button>\n' +
-        '                    </div>\n' +
-        '                </div>\n' +
-        '            </div>\n' +
-        '        </div>\n' +
-        '        <small id="song" class="text-center center-block">播放已停止</small>\n' +
-        '        <audio controls="controls" autoplay="autoplay" id="audio"></audio>\n' +
-        '    </div>\n' +
-        '</nav>\n' +
-        '<div class="modal fade" tabindex="-1" id="modal" role="dialog">\n' +
-        '    <div class="modal-dialog" role="document">\n' +
-        '        <div class="modal-content">\n' +
-        '            <div class="modal-header">\n' +
-        '                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span\n' +
-        '                        aria-hidden="true">&times;</span>\n' +
-        '                </button>\n' +
-        '                <h4 class="modal-title">title</h4>\n' +
-        '            </div>\n' +
-        '            <div class="modal-body"></div>\n' +
-        '            <div class="modal-footer">\n' +
-        '                <button type="button" class="btn btn-default" data-dismiss="modal">\n' +
-        '                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>\n' +
-        '                </button>\n' +
-        '            </div>\n' +
-        '        </div>\n' +
-        '    </div>\n' +
-        '</div>';
-
-    try {
+	var source = location.href.replace(/^([^:]+:\/+[^\/]+).*/,"$1");
+	try {
         localStorage.setItem("TEST", 1);
     } catch (e) {
         quit("浏览器版本过低，或您使用了隐私模式：无法使用自动保存播放列表功能");
@@ -153,10 +115,12 @@ var source = 'vvvdj.com';
     }
 
     window.audio = document.getElementById('audio');
-    init();
-}();
-
-function init() {
+	var plaform = {
+    // ios volume readonly
+    isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
+    isMac: 'MacIntel' === navigator.platform,
+    isAndroid: navigator.userAgent.indexOf('Android')
+};
     if (!window.jQuery) {
         setTimeout(init, 500);
         return;
