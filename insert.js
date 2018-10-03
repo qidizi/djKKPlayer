@@ -34,13 +34,14 @@ var source = 'vvvdj.com';
         name: 'viewport',
         content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
     });
-    createDom('link', {
-        rel: 'stylesheet',
-        href: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css'
-    });
+    
     createDom('link', {
         rel: 'stylesheet',
         href: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css'
+    });
+    createDom('link', {
+        rel: 'stylesheet',
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css'
     });
     createDom('script', {
         src: 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/js/bootstrap.min.js'
