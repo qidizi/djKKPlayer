@@ -1,113 +1,142 @@
 +function () {
-	var source = 'vvvdj.com';
+    var source = 'vvvdj.com';
     if (!location.hostname || location.hostname.toLowerCase().indexOf(source) < 0) {
-        var delay = 5;
+        var delay = 3;
         quit('页面完成后，请<strong style="color: red;" >再次点击标签</strong>，注入播放器<br>' +
             delay + '秒后自动打开<a href="' + source + '">' + source + '</a>');
         setTimeout(function () {
-            location.href = "http://www."+source + '/?r=' + +new Date;
+            location.href = "http://www." + source + '/?r=' + +new Date;
         }, delay * 1000);
         return;
     }
+
     makePlayer();
 }();
 
-function makePlayer(){
-    var html ='\
-<!DOCTYPE html> \
-<html> \
-<head> \
-<title>DJ Player</title> \
-<meta charset="UTF-8"> \
-<meta id="scale" content="width=device-width,initial-scale=1.0,maximum-scale=1.0, user-scalable=0" name="viewport"> \
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script> \
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css" /> \
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css" /> \
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script> \
-<style> \
-.container{max-width:768px;} \
-audio{display: block;width:100%;} \
-.listBody{padding-top:70px;padding-bottom:300px;} \
-</style> \
-</head> \
-<body> \
-<nav class="navbar navbar-default navbar-fixed-top"> \
- <div class="container"> \
-  <ul class="nav nav-tabs  " role="tablist"> \
-    <li role="presentation" class="active"> \
-     <a href="#playListBox" aria-controls="playListBox" role="tab" data-toggle="tab"> \
-     <button class="btn btn-link btn-sm"> \
-     <b class="glyphicon glyphicon-list-alt"></b> \
-     </button> \
-        </a> \
- </li> \
- <li role="presentation"> \
-   <a href="#resultBox" aria-controls="resultBox" data-toggle="tab"> \
-    <form onsubmit="return false;" class="form-inline" style="width: 180px;"> \
-    <span class="input-group input-group-sm"> \
-    <span class="input-group-addon" role="tab"> \
-    <span class="glyphicon glyphicon-music"></span> \
-    </span> \
-    <input class="form-control" placeholder="客官要点啥？" id="keyWord"> \
-   <span class="input-group-btn"> \
-    <button class="btn btn-default" type="submit" id="search"> \
-    <span class="glyphicon glyphicon-search"></span> \
-    </button> \
-   </span> \
-   </span> \
- </form> \
- </a> \
-</li> \
- </ul> \
- </div> \
-</nav> \
-<div class="tab-content listBody"> \
- <div role="tabpanel" class="tab-pane active" id="playListBox"> \
- <ul class="list-group" id="playList"></ul> \
- </div> \
-<div role="tabpanel" class="tab-pane" id="resultBox"> \
- <ul class="list-group" id="result"></ul> \
-</div> \
-</div> \
-<nav class="navbar navbar-default navbar-fixed-bottom"> \
- <div class="container"> \
- <div class="row"> \
- <div class="col-xs-12"> \
- <div class="btn-group btn-group-justified" role="group"> \
- <div class="btn-group" role="group"> \
- <button class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown" type="button"> \
-<span class="glyphicon glyphicon-volume-down" aria-hidden="true"></span> \
-</button> \
-</div> \
-<div class="btn-group" role="group"> \
-<button class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp" type="button"> \
-<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span> \
-</button> \
- </div> \
-<div class="btn-group" role="group"> \
-<button class="btn btn-danger  navbar-btn navbar-left" type="button" id="deletePlay"> \
-<span class="glyphicon glyphicon-trash"></span> \
-</button> \
- </div> \
-<div class="btn-group" role="group"> \
-<button class="btn btn-default   navbar-btn navbar-left" type="button" id="playNext"> \
-<span class="glyphicon glyphicon-step-forward"></span> \
- </button> \
-</div> \
-</div> \
-</div> \
-</div> \
-<small id="song" class="text-center center-block">播放已停止</small> \
-<audio controls="controls" autoplay="autoplay" id="audio"></audio> \
-</div> \
-</nav> \
-';
+function quit(tip) {
+    document.open();
+    document.write(
+        '<!DOCTYPE html><html><head>' +
+        '<meta charset="UTF-8">' +
+        '<title>提示</title></head><body>' +
+        tip + '</body></html>'
+    );
+    document.close();
+}
+
+function makePlayer() {
+    var html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>DJ Player</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <style> .container {
+        max-width: 768px;
+    }
+
+    audio {
+        display: block;
+        width: 100%;
+    }
+
+    .listBody {
+        padding-top: 70px;
+        padding-bottom: 300px;
+    } </style>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <ul class="nav nav-tabs  " role="tablist">
+            <li role="presentation" class="active">
+                <a href="#playListBox" aria-controls="playListBox" role="tab" data-toggle="tab">
+                    <button class="btn btn-link btn-sm">
+                        <b class="glyphicon glyphicon-list-alt"></b>
+                    </button>
+                </a>
+            </li>
+            <li role="presentation"><a href="#resultBox" aria-controls="resultBox" data-toggle="tab">
+                <form onsubmit="return false;" class="form-inline" style="width: 180px;">
+                    <span class="input-group input-group-sm">    
+                        <span class="input-group-addon" role="tab">    
+                            <span class="glyphicon glyphicon-music"></span> 
+                        </span>     
+                        <input class="form-control" placeholder="客官要点啥？" id="keyWord">  
+                        <span class="input-group-btn">    
+                            <button class="btn btn-default" type="submit" id="search">  
+                                <span class="glyphicon glyphicon-search"></span> 
+                            </button>   
+                        </span>  
+                    </span>
+                </form>
+            </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="tab-content listBody">
+    <div role="tabpanel" class="tab-pane active" id="playListBox">
+        <ul class="list-group" id="playList"></ul>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="resultBox">
+        <ul class="list-group" id="result"></ul>
+    </div>
+</div>
+<nav class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="btn-group btn-group-justified" role="group">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown" type="button">
+                            <span class="glyphicon glyphicon-volume-down" aria-hidden="true">                                
+                            </span>
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp" type="button">
+                            <span class="glyphicon glyphicon-volume-up" aria-hidden="true">                                
+                            </span>
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-danger  navbar-btn navbar-left" type="button" id="deletePlay">
+                            <span class="glyphicon glyphicon-trash">
+                                                            </span>
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default   navbar-btn navbar-left" type="button" id="playNext">
+                            <span class="glyphicon glyphicon-step-forward">                                
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <small id="song" class="text-center center-block">播放已停止</small>
+        <audio controls="controls" autoplay="autoplay" id="audio"></audio>
+    </div>
+</nav>
+</body>
+</html>
+    `;
+    html = html + '<script type="text/javascript" charset="UTF-8">' + javascript + '</script>';
+    document.open();
+    document.write(html);
+    document.close();
 }
 
 function javascript() {
-	// 可能子域是www或是m
-	var source = location.href.replace(/^([^:]+:\/+[^\/]+).*/,"$1");
-	try {
+    // 可能子域是www或是m
+    var source = location.href.replace(/^([^:]+:\/+[^\/]+).*/, "$1");
+    try {
         localStorage.setItem("TEST", 1);
     } catch (e) {
         quit("浏览器版本过低，或您使用了隐私模式：无法使用自动保存播放列表功能");
@@ -115,12 +144,12 @@ function javascript() {
     }
 
     window.audio = document.getElementById('audio');
-	var plaform = {
-    // ios volume readonly
-    isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
-    isMac: 'MacIntel' === navigator.platform,
-    isAndroid: navigator.userAgent.indexOf('Android')
-};
+    var plaform = {
+        // ios volume readonly
+        isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
+        isMac: 'MacIntel' === navigator.platform,
+        isAndroid: navigator.userAgent.indexOf('Android')
+    };
     if (!window.jQuery) {
         setTimeout(init, 500);
         return;
@@ -215,7 +244,7 @@ function javascript() {
                     '</li>');
                 return;
             }
-            
+
             qidizi.word = word;
             getSearch(1);
         })
@@ -335,7 +364,7 @@ function getSearch(page) {
         '<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span> 处理中...' +
         '</li>');
     $('#keyWord').attr('readonly', 'readonly');
-    var url = source + "/search/so?key=" + encodeURIComponent(word) + "&page=" + (page||1);
+    var url = source + "/search/so?key=" + encodeURIComponent(word) + "&page=" + (page || 1);
     $.ajax({
         url: url,
         type: 'POST',
@@ -391,11 +420,11 @@ function getSearch(page) {
                     '</li>';
             } else {
                 pages = '<button class="btn btn-default jsNextPage" value="1">' +
-                '<span class="glyphicon glyphicon-step-backward"></span>' +
-                 '</button>' +
-                 pages +
-                 '<button class="btn btn-default jsNextPage" value="1">' +
-                '<span class="glyphicon glyphicon-option-horizontal"></span>';
+                    '<span class="glyphicon glyphicon-step-backward"></span>' +
+                    '</button>' +
+                    pages +
+                    '<button class="btn btn-default jsNextPage" value="1">' +
+                    '<span class="glyphicon glyphicon-option-horizontal"></span>';
                 links += '<li class="list-group-item text-center  list-group-item-success">' +
                     pages +
                     '</li>';
@@ -413,62 +442,62 @@ function getSearch(page) {
         },
         dataType: 'text'
     });
-}
 
-function playNext() {
-    // empty list
-    if (!$('#playList li').length) return;
+    function playNext() {
+        // empty list
+        if (!$('#playList li').length) return;
 
-    var li = $('#playList li.isPlaying');
+        var li = $('#playList li.isPlaying');
 
-    if (li.length) {
-        // has playing
-        li = li.next();
+        if (li.length) {
+            // has playing
+            li = li.next();
+        }
+
+        if (!li.length) {
+            // stop ? first item
+            li = $('#playList li:first');
+        }
+
+        var src = li.attr('data-href');
+        playMe(src, li.text(), li);
     }
 
-    if (!li.length) {
-        // stop ? first item
-        li = $('#playList li:first');
+    function playMe(src, title, li) {
+        if (!src) return;
+        var playCls = 'list-group-item-success isPlaying';
+        $('#playList li').removeClass(playCls);
+        $(li).addClass(playCls);
+        $('#song').text(document.title = title);
+        var audio = $('audio').get(0);
+        audio.src = src;
+        audio.play();
+        saveList();
     }
 
-    var src = li.attr('data-href');
-    playMe(src, li.text(), li);
-}
 
-function playMe(src, title, li) {
-    if (!src) return;
-    var playCls = 'list-group-item-success isPlaying';
-    $('#playList li').removeClass(playCls);
-    $(li).addClass(playCls);
-    $('#song').text(document.title = title);
-    var audio = $('audio').get(0);
-    audio.src = src;
-    audio.play();
-    saveList();
-}
+    function mAlert(msg, title) {
+        $('#modal .modal-body').html(msg);
+        $('#modal .modal-title').text(title || 'notice');
+        $('#modal').modal();
+    }
 
+    function createDom(tag, attr, parentTag) {
+        var dom = document.createElement(tag);
+        if (attr)
+            for (var name in attr) dom.setAttribute(name, attr[name]);
+        (parentTag ? document.getElementsByTagName(parentTag)[0] : document.documentElement).appendChild(dom);
+        return dom;
+    }
 
-function mAlert(msg, title) {
-    $('#modal .modal-body').html(msg);
-    $('#modal .modal-title').text(title || 'notice');
-    $('#modal').modal();
-}
-
-function createDom(tag, attr, parentTag) {
-    var dom = document.createElement(tag);
-    if (attr)
-        for (var name in attr) dom.setAttribute(name, attr[name]);
-    (parentTag ? document.getElementsByTagName(parentTag)[0] : document.documentElement).appendChild(dom);
-    return dom;
-}
-
-function quit(tip) {
-    document.open();
-    document.write(
-        '<!DOCTYPE html><html><head>' +
-        '<meta charset="utf-8">' +
-        '<title>提示</title></head><body>' +
-        tip + '</body></html>'
-    );
-    document.close();
+    function quit(tip) {
+        document.open();
+        document.write(
+            '<!DOCTYPE html><html><head>' +
+            '<meta charset="utf-8">' +
+            '<title>提示</title></head><body>' +
+            tip + '</body></html>'
+        );
+        document.close();
+    }
 }
