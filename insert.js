@@ -28,105 +28,67 @@ function quit(tip) {
 function makePlayer() {
 	if ('loading' === document.readyState) return setTimeout(makePlayer,100);
     var html = `
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>DJ Player</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <style> .container {
-        max-width: 768px;
-    }
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+    <style>
+        audio {
+            display: block;
+            width: 100%;
+        }
 
-    audio {
-        display: block;
-        width: 100%;
-    }
-
-    .listBody {
-        padding-top: 70px;
-        padding-bottom: 300px;
-    } </style>
+        .listBody {
+            padding-top: 70px;
+            padding-bottom: 300px;
+        } </style>
 </head>
 <body>
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-    <div class="input-group"> <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2"> <div class="input-group-append"> <button class="btn btn-outline-secondary" type="button">Button</button> <button class="btn btn-outline-secondary" type="button">Button</button> </div> </div>
-        <ul class="nav nav-tabs  " role="tablist">
-            <li role="presentation" class="active">
-                <a href="#playListBox" aria-controls="playListBox" role="tab" data-toggle="tab">
-                    <button class="btn btn-link btn-sm">
-                        <b class="glyphicon glyphicon-list-alt"></b>
-                    </button>
-                </a>
-            </li>
-            <li role="presentation"><a href="#resultBox" aria-controls="resultBox" data-toggle="tab">
-                <form onsubmit="return false;" class="form-inline" style="width: 180px;">
-                    <span class="input-group input-group-sm">    
-                        <span class="input-group-addon" role="tab">    
-                            <span class="glyphicon glyphicon-music"></span> 
-                        </span>     
-                        <input class="form-control" placeholder="客官要点啥？" id="keyWord">  
-                        <span class="input-group-btn">    
-                            <button class="btn btn-default" type="submit" id="search">  
-                                <span class="glyphicon glyphicon-search"></span> 
-                            </button>   
-                        </span>  
-                    </span>
-                </form>
-            </a>
-            </li>
-        </ul>
-    </div>
+<nav class="navbar fixed-top navbar-light bg-light">
+    <form onsubmit="return false;" class="needs-validation form-inline mx-auto" novalidate="novalidate">
+        <input class="form-control text-center" placeholder="客官要点啥？" id="keyWord" required="required">
+        <button class="btn btn-outline-secondary" type="submit" id="search">找歌</button>
+        <button class="btn btn-outline-success active" type="button" id="showLists">我的</button>
+    </form>
 </nav>
-<div class="tab-content listBody">
-    <div role="tabpanel" class="tab-pane active" id="playListBox">
-        <ul class="list-group" id="playList"></ul>
-    </div>
-    <div role="tabpanel" class="tab-pane" id="resultBox">
-        <ul class="list-group" id="result"></ul>
-    </div>
-</div>
-<nav class="navbar navbar-default navbar-fixed-bottom">
+
+<ul class="list-group listBody" id="playList"></ul>
+<ul class="list-group " id="result"></ul>
+
+
+<nav class="navbar fixed-bottom navbar-light bg-light">
     <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="btn-group btn-group-justified" role="group">
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default navbar-btn navbar-left jsVolumeChange isDown" type="button">
-                            <span class="glyphicon glyphicon-volume-down" aria-hidden="true">                                
-                            </span>
-                        </button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default  navbar-btn navbar-left  jsVolumeChange isUp" type="button">
-                            <span class="glyphicon glyphicon-volume-up" aria-hidden="true">                                
-                            </span>
-                        </button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-danger  navbar-btn navbar-left" type="button" id="deletePlay">
-                            <span class="glyphicon glyphicon-trash">
-                                                            </span>
-                        </button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-default   navbar-btn navbar-left" type="button" id="playNext">
-                            <span class="glyphicon glyphicon-step-forward">                                
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="row  mx-auto">
+            <button class="btn btn-outline-dark jsVolumeChange isDown" type="button">大声</button>
+            <button class="btn btn-outline-dark jsVolumeChange isUp" type="button">小声</button>
+            <button class="btn btn-outline-danger" type="button" id="deletePlay">删了</button>
+            <button class="btn btn-outline-primary" type="button" id="playNext">下首</button>
         </div>
-        <small id="song" class="text-center center-block">播放已停止</small>
-        <audio controls="controls" autoplay="autoplay" id="audio"></audio>
     </div>
+    <div class="container">
+        <div id="song" class="text-center navbar-text row  mx-auto">播放已停止</div>
+    </div>
+    <div class="container">
+        <audio controls="controls" autoplay="autoplay" id="audio" class="row  mx-auto"
+               src="http://tm.vvvdj.com/mp4/c2/2018/09/167082-e68f33.mp4"></audio>
+    </div>
+
 </nav>
+
 </body>
 </html>
     `;
