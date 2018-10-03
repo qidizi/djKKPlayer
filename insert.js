@@ -16,7 +16,7 @@ var source = 'vvvdj.com';
         quit('页面完成后，请<strong style="color: red;" >再次点击标签</strong>，注入播放器<br>' +
             delay + '秒后自动打开<a href="' + source + '">' + source + '</a>');
         setTimeout(function () {
-            location.href = "http://"+source + '?r=' + +new Date;
+            location.href = "http://www."+source + '/?r=' + +new Date;
         }, delay * 1000);
         return;
     }
