@@ -1,4 +1,5 @@
 +function () {
+	return makePlayer();
     var source = 'vvvdj.com';
     if (!location.hostname || location.hostname.toLowerCase().indexOf(source) < 0) {
         var delay = 3;
@@ -25,6 +26,7 @@ function quit(tip) {
 }
 
 function makePlayer() {
+	if ('loading' === document.readyState) return setTimeout(makePlayer,100);
     var html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -53,6 +55,7 @@ function makePlayer() {
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
+    <div class="input-group"> <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2"> <div class="input-group-append"> <button class="btn btn-outline-secondary" type="button">Button</button> <button class="btn btn-outline-secondary" type="button">Button</button> </div> </div>
         <ul class="nav nav-tabs  " role="tablist">
             <li role="presentation" class="active">
                 <a href="#playListBox" aria-controls="playListBox" role="tab" data-toggle="tab">
@@ -128,7 +131,7 @@ function makePlayer() {
 </html>
     `;
     html = html + '<script type="text/javascript" charset="UTF-8">' + javascript + '</script>';
-    document.open();
+    document.open('text/html','replace');
     document.write(html);
     document.close();
 }
