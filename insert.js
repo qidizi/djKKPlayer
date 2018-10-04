@@ -78,8 +78,8 @@ function makePlayer() {
 <ul class="list-group listBody jsListBody" id="playList"></ul>
 <nav class="navbar fixed-bottom navbar-light bg-light px-0">
     <div class="text-center w-100">
-        <a class="btn btn-outline-dark jsVolumeChange isDown">大声</a>
-        <a class="btn btn-outline-dark jsVolumeChange isUp">小声</a>
+        <a class="btn btn-outline-dark jsVolumeChange isDown">减小</a>
+        <a class="btn btn-outline-dark jsVolumeChange isUp">加大</a>
         <a class="btn btn-outline-danger" id="deletePlay">删了</a>
         <a class="btn btn-outline-primary" id="playNext">下首</a>
     </div>
@@ -110,14 +110,14 @@ function javascript() {
         isAndroid: navigator.userAgent.indexOf('Android')
     };
 
-    if (plaform.isIos) {
+   // if (plaform.isIos) {
         /* 禁用并绑定调整音量按钮提示
-         ios 限制，需要用户操作触发首次播放，下次才能自动播放
+         ios 限制，需要用户操作触发首次播放，下次才能自动播放,firefox 有选项启用
          */
         $('body').once('click', function () {
             audio.play();
         });
-    }
+   // }
 
     /* ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；*/
     audio.onended = playNext;
@@ -157,7 +157,7 @@ function javascript() {
 
             }
             $(this).stop().html(String(audio.volume).replace(/(\.\d{2})\d+$/, '$1')).show().delay(1000).show(function () {
-                $(this).html('<span class="glyphicon glyphicon-volume-' + (isUp ? 'up' : 'down') + '" aria-hidden="true"></span>');
+                $(this).html(isUp ? '加大' : '减小');
             });
         })
         .delegate('.jsPlayResultItem', 'click', function () {
@@ -234,7 +234,7 @@ function javascript() {
             '<a class="btn btn-link jsPlayMe" href="javascript:void(0);">' +
             title +
             '</a> ' +
-            '<a class="btn btn-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
+            '<a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
             '</li>';
     }
 
@@ -327,9 +327,9 @@ function javascript() {
 
     function resultLi(id, title) {
         return '<li class="list-group-item text-right"  data-href="' + source + '/play/' + id + '.html">' +
-            '<a href="javascript:void(0)" class="btn btn-default jsPlayResultItem jsSongTitle" data-is="play">' + title + '</a>' +
-            '<a href="javascript:void(0)" class="btn btn-default jsPlayResultItem" data-is="test">试听</a>' +
-            '<a href="javascript:void(0)" class="btn btn-default jsPlayResultItem" data-is="append">加入</a>' +
+            '<a href="javascript:void(0)" class="btn btn-link jsPlayResultItem jsSongTitle" data-is="play">' + title + '</a>' +
+            '<a href="javascript:void(0)" class="btn btn-outline-primary jsPlayResultItem" data-is="test">试听</a>' +
+            '<a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="append">加入</a>' +
             '</li>';
     }
 
