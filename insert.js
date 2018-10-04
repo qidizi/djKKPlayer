@@ -228,10 +228,12 @@ function javascript() {
 
     function listLi(src, title, cls) {
         return '<li class="list-group-item ' + (cls || '') + ' text-right"  data-href="' + src + '">' +
-            '<a class="btn btn-link jsPlayMe jsSongTitle mw-100 text-truncate" href="javascript:void(0);">' +
+            '<a class="btn btn-link jsSongTitle mw-100 text-truncate" href="javascript:void(0);">' +
             title +
             '</a>' +
-            '<br><a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
+            '<br>' + 
+            '<a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
+            '<a class="btn btn-outline-success jsPlayMe" href="javascript:void(0);">播放</a> ' +
             '</li>';
     }
 
@@ -324,8 +326,9 @@ function javascript() {
 
     function resultLi(id, title) {
         return '<li class="list-group-item text-right"  data-href="' + source + '/play/' + id + '.html">' +
-            '<a href="javascript:void(0)" class="btn btn-link jsPlayResultItem mw-100 text-truncate jsSongTitle" data-is="play">' + title + '</a>' +
+            '<a href="javascript:void(0)" class="btn btn-link mw-100 text-truncate jsSongTitle">' + title + '</a>' +
             '<br><a href="javascript:void(0)" class="btn btn-outline-primary jsPlayResultItem" data-is="test">试听</a>' +
+            ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="play">播放</a>' +
             ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="append">加入</a>' +
             '</li>';
     }
@@ -425,21 +428,21 @@ function javascript() {
                         '<i>' + page + '/' + pages + '</i>';
 
                     if (page > 1) {
-                        songHtml += '<a href="javascript:void(1)" class="btn btn-default jsNextPage" data-page="1">首页</a>' +
-                            '<a href="javascript:void(' + (page - 1) + ')" class="btn btn-default jsNextPage" data-page="' + (page - 1) + '">上页</a>'
+                        songHtml += '<a href="javascript:void(1)" class="btn btn-link jsNextPage" data-page="1">首页</a>' +
+                            '<a href="javascript:void(' + (page - 1) + ')" class="btn btn-link jsNextPage" data-page="' + (page - 1) + '">上页</a>'
                         ;
                     }
 
                     if (page + 1 <= pages) {
-                        songHtml += '<a href="javascript:void(' + (page + 1) + ')" class="btn btn-default jsNextPage" data-page="' + (page + 1) + '">下页</a>' +
-                            '<a href="javascript:void(' + pages + ')" class="btn btn-default jsNextPage" data-page="' + pages + '">尾页</a>'
+                        songHtml += '<a href="javascript:void(' + (page + 1) + ')" class="btn btn-link jsNextPage" data-page="' + (page + 1) + '">下页</a>' +
+                            '<a href="javascript:void(' + pages + ')" class="btn btn-link jsNextPage" data-page="' + pages + '">尾页</a>'
                         ;
                     }
 
                     for (var i = 1; i <= pages; i++) {
                         if (page === i) continue;
 
-                        songHtml += '<a href="javascript:void(' + i + ')" class="btn btn-default jsNextPage" data-page="' + i + '">' +
+                        songHtml += '<a href="javascript:void(' + i + ')" class="btn btn-link jsNextPage" data-page="' + i + '">' +
                             i +
                             '</a>'
                         ;
@@ -476,7 +479,7 @@ function javascript() {
         }
 
         var src = li.attr('data-href');
-        playMe(src, li.text(), li);
+        playMe(src, li.find('.jsSongTitle').text(), li);
     }
 
     function playMe(src, title, li) {
