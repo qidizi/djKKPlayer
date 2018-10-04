@@ -232,9 +232,9 @@ function javascript() {
     function listLi(src, title, cls) {
         return '<li class="list-group-item ' + (cls || '') + '"  data-href="' + src + '">' +
             '<a class="btn btn-link jsPlayMe" href="javascript:void(0);">' +
-            '<a class="btn btn-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
             title +
             '</a> ' +
+            '<a class="btn btn-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
             '</li>';
     }
 
