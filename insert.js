@@ -228,10 +228,10 @@ function javascript() {
 
     function listLi(src, title, cls) {
         return '<li class="list-group-item ' + (cls || '') + ' text-right"  data-href="' + src + '">' +
-            '<a class="btn btn-link jsPlayMe jsSongTitle" href="javascript:void(0);">' +
+            '<a class="btn btn-link jsPlayMe jsSongTitle text-truncate" href="javascript:void(0);">' +
             title +
             '</a>' +
-            ' <a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
+            '<br><a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
             '</li>';
     }
 
@@ -324,8 +324,8 @@ function javascript() {
 
     function resultLi(id, title) {
         return '<li class="list-group-item text-right"  data-href="' + source + '/play/' + id + '.html">' +
-            '<a href="javascript:void(0)" class="btn btn-link jsPlayResultItem jsSongTitle" data-is="play">' + title + '</a>' +
-            ' <a href="javascript:void(0)" class="btn btn-outline-primary jsPlayResultItem" data-is="test">试听</a>' +
+            '<a href="javascript:void(0)" class="btn btn-link jsPlayResultItem text-truncate jsSongTitle" data-is="play">' + title + '</a>' +
+            '<br><a href="javascript:void(0)" class="btn btn-outline-primary jsPlayResultItem" data-is="test">试听</a>' +
             ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="append">加入</a>' +
             '</li>';
     }
