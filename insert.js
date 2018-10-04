@@ -230,7 +230,7 @@ function javascript() {
     }
 
     function listLi(src, title, cls) {
-        return '<li class="list-group-item ' + (cls || '') + '"  data-href="' + src + '">' +
+        return '<li class="list-group-item ' + (cls || '') + ' text-right"  data-href="' + src + '">' +
             '<a class="btn btn-link jsPlayMe" href="javascript:void(0);">' +
             title +
             '</a> ' +
@@ -308,7 +308,7 @@ function javascript() {
                 'append' !== is && playMe(src, title, li);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                mAlert('获取播放地址异常，请联系作者修复[' + textStatus + ']');
+                myAlert('获取播放地址异常，请联系作者修复[' + textStatus + ']',dom);
             }
         });
     }
