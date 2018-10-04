@@ -110,14 +110,12 @@ function javascript() {
         isAndroid: navigator.userAgent.indexOf('Android')
     };
 
-   // if (plaform.isIos) {
         /* 禁用并绑定调整音量按钮提示
          ios 限制，需要用户操作触发首次播放，下次才能自动播放,firefox 有选项启用
          */
-        $('body').once('click', function () {
+        $('body').one('click', function () {
             audio.play();
         });
-   // }
 
     /* ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；*/
     audio.onended = playNext;
