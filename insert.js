@@ -185,7 +185,7 @@ function javascript() {
         .delegate('.jsPlayMe', 'click', function () {
             var li = $(this).parents('li');
             var src = li.attr('data-href');
-            playMe(src, li.text(), li);
+            playMe(src, li.find('.jsSongTitle').text(), li);
         })
         .delegate('#playNext', 'click', function () {
             playNext();
@@ -232,7 +232,7 @@ function javascript() {
             title +
             '</a>' +
             '<br>' + 
-            '<a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
+            '<a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删了</a> ' +
             '<a class="btn btn-outline-success jsPlayMe" href="javascript:void(0);">播放</a> ' +
             '</li>';
     }
