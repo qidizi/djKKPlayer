@@ -54,13 +54,16 @@
     注意留意使用引导提示。
 </p>
 <script>
-    function javascriptCode() {
-        document.open();
-        document.write('<' + 'script type="text/javascript" charset="UTF-8" src="https://qidizi.github.io/djPlayer/insert.js?r=' + (+new Date) + '"><' + '/script>');
+    function javascript() {
+        document.write('<' + 'script type="text/javascript" charset="UTF-8" src="{host}insert.js?r=' + (+new Date) + '"><' + '/script>');
         document.close();
     }
 
-    var str = String(javascriptCode).replace(/^[^{]+{|\}\s*$/g, '').replace(/[\r\n]+|^\s+|\s+$/gm, '');
+    // 自己选择域名
+    var str = String(javascript)
+        .replace(/^[^{]+{|\}\s*$/g, '')
+        .replace(/[\r\n]+|^\s+|\s+$/gm, '')
+        .replace('{host}', (location.protocol + '//' + location.hostname + location.pathname).replace(/index\.html/i, ''));
     var code = [];
 
     for (var i = 0; i < str.length; i++) {
@@ -68,8 +71,6 @@
     }
     var url = 'javascript:eval(String.fromCharCode(' + code + '));';
     document.getElementById('code').href = url;
-document.write('<' + 'script src="./insert.js?' + +new Date+  '"><' + '/script>');
-
 </script>
 </body>
 </html>
