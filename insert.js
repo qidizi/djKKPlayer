@@ -84,8 +84,7 @@ function makePlayer() {
         <a class="btn btn-outline-primary" id="playNext">下首</a>
     </div>
     <div id="song" class="text-center navbar-text w-100 text-truncate" role="alert">播放已停止</div>
-    <audio controls="controls" autoplay="autoplay" id="audio" class="b-block w-100"
-           src="http://tm.vvvdj.com/mp4/c2/2018/09/167082-e68f33.mp4"></audio>
+    <audio controls="controls" autoplay="autoplay" id="audio" class="b-block w-100"></audio>
 </nav>
 <script type="text/javascript" charset="UTF-8"><!--/*js*///--></script>
 </body>
@@ -229,7 +228,7 @@ function javascript() {
 
     function listLi(src, title, cls) {
         return '<li class="list-group-item ' + (cls || '') + ' text-right"  data-href="' + src + '">' +
-            '<a class="btn btn-link jsPlayMe" href="javascript:void(0);">' +
+            '<a class="btn btn-link jsPlayMe jsSongTitle" href="javascript:void(0);">' +
             title +
             '</a> ' +
             '<a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删除</a> ' +
@@ -240,7 +239,7 @@ function javascript() {
         var json = [];
         $('#playList li').each(function () {
             var obj = {
-                t: $(this).text(),
+                t: $(this).find(".jsSongTitle").text(),
                 s: $(this).data('href')
             };
 
