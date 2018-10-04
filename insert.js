@@ -65,7 +65,7 @@ function makePlayer() {
 <body>
 <nav class="navbar fixed-top navbar-light bg-light">
     <form onsubmit="return false;" class="needs-validation form-inline mx-auto" novalidate="novalidate" id="searchForm">
-        <div class="input-group"><input class="form-control text-center" value="remix" placeholder="找啥？" id="keyWord"
+        <div class="input-group"><input class="form-control text-center" placeholder="找啥？" id="keyWord"
                                         required="required">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="submit" id="search">找歌</button>
