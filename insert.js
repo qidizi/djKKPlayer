@@ -60,9 +60,11 @@ function makePlayer() {
 <body>
 <nav class="navbar fixed-top navbar-light bg-light">
     <form onsubmit="return false;" class="needs-validation form-inline mx-auto" novalidate="novalidate">
-        <input class="form-control text-center" placeholder="客官要点啥？" id="keyWord" required="required">
+     <div class="input-group"> <input class="form-control text-center" placeholder="客官要点啥？" id="keyWord" required="required"> <div class="input-group-append">
         <button class="btn btn-outline-secondary" type="submit" id="search">找歌</button>
         <button class="btn btn-outline-success active" type="button" id="showLists">我的</button>
+     </div>
+    </div>
     </form>
 </nav>
 
