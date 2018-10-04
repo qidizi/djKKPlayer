@@ -47,30 +47,52 @@ function makePlayer() {
             integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
             crossorigin="anonymous"></script>
     <style>
+    
         audio {
             display: block;
             width: 100%;
         }
 
         .listBody {
-            padding-top: 70px;
-            padding-bottom: 300px;
-        } </style>
+            margin: 70px; auto 300px;
+        } 
+</style>
 </head>
 <body>
 <nav class="navbar fixed-top navbar-light bg-light">
     <form onsubmit="return false;" class="needs-validation form-inline mx-auto" novalidate="novalidate">
      <div class="input-group"> <input class="form-control text-center" placeholder="客官要点啥？" id="keyWord" required="required"> <div class="input-group-append">
         <button class="btn btn-outline-secondary" type="submit" id="search">找歌</button>
-        <button class="btn btn-outline-success active" type="button" id="showLists">我的</button>
+        <button class="btn btn-outline-success active" type="button" id="showList">我的</button>
      </div>
     </div>
     </form>
 </nav>
-
-<ul class="list-group listBody" id="playList"></ul>
-<ul class="list-group " id="result"></ul>
-
+bxbxnnnndnnd
+<ul class="list-group rounded-bottom list-group-flush border border-dark listBody hidden" id="result"></ul>
+<ul class="list-group rounded-bottom list-group-flush border border-success listBody" id="playList">
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+<li>hdhhdhhdhdhd</li>
+</ul>
+hxhdhhdhdbbdvd
 
 <nav class="navbar fixed-bottom navbar-light bg-light">
     <div class="container">
@@ -84,11 +106,8 @@ function makePlayer() {
     <div class="container">
         <div id="song" class="text-center navbar-text row  mx-auto">播放已停止</div>
     </div>
-    <div class="container">
-        <audio controls="controls" autoplay="autoplay" id="audio" class="row  mx-auto"
+    <audio controls="controls" autoplay="autoplay" id="audio"
                src="http://tm.vvvdj.com/mp4/c2/2018/09/167082-e68f33.mp4"></audio>
-    </div>
-
 </nav>
 
 </body>
