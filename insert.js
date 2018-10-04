@@ -81,7 +81,7 @@ function makePlayer() {
         <a class="btn btn-outline-dark jsVolumeChange isDown">减小</a>
         <a class="btn btn-outline-dark jsVolumeChange isUp">加大</a>
         <a class="btn btn-outline-danger" id="deletePlay">删了</a>
-        <a class="btn btn-outline-primary" id="playNext">下首</a>
+        <a class="btn btn-outline-success" id="playNext">下首</a>
     </div>
     <div id="song" class="text-center navbar-text w-100 text-truncate" role="alert">播放已停止</div>
     <audio controls="controls" autoplay="autoplay" id="audio" class="b-block w-100"></audio>
