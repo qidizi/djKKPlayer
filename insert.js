@@ -63,7 +63,7 @@ function makePlayer() {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Base64/1.0.1/base64.min.js"></script>
-    <script src="./base64.js"></script>
+    <script src="https://qidizi.github.io/djPlayer/base64.js"></script>
     <style>
         html, body {
             min-width: 100%;
