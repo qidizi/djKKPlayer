@@ -549,6 +549,7 @@ function javascript() {
             '</li>';
     }
 
+    
     function progress(show) {
         $('#progress')[show ? 'removeClass' : 'addClass']('d-none');
     }
