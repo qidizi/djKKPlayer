@@ -384,7 +384,7 @@ function javascript() {
 
     function getSearch(page) {
         switchList();
-        resultInfo('搜索中...');
+        resultInfo('<a onclick="return false;" href="' + getUrl(page) + '">搜索中...</a>');
         $('#keyWord').attr('readonly', 'readonly');
         page = +page || 1;
 
