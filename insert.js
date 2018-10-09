@@ -112,32 +112,10 @@ function makePlayer() {
 </html>
     `;
     // 发现放到html后面，不会解析js
-    html = html.replace('<!--js-->', '<script type="text/javascript" charset="UTF-8">+' + catchError + '();+' + javascript + '();</script>');
+    html = html.replace('<!--js-->', '<script type="text/javascript" charset="UTF-8">+' + javascript + '();</script>');
     document.open();
     document.write(html);
     document.close();
-}
-
-function catchError() {
-    window.onerror = function (msg, url, lineNo, columnNo, error) {
-        var string = msg.toLowerCase();
-        var substring = "script error";
-        if (string.indexOf(substring) > -1) {
-            alert('Script Error: 可能是异域或是跨域异常，无法获取错误详情，请看控制台');
-        } else {
-            var message = [
-                'Message: ' + msg,
-                'URL: ' + url,
-                'Line: ' + lineNo,
-                'Column: ' + columnNo,
-                'Error object: ' + JSON.stringify(error)
-            ].join(' - ');
-
-            alert('播放器异常\n' + message);
-        }
-
-        return false;
-    };
 }
 
 function javascript() {
