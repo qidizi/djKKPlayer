@@ -368,7 +368,7 @@ function javascript() {
 
 // cid 0全部，1串烧，2单曲；list 1 a-z，2 z-a，3 热播，4 下载最多
         function getUrl(page) {
-            return qidizi.source + "/search/so??cid=0&list=1&page=1&key=" + encodeURIComponent(qidizi.word) + "&page=" + page;
+            return qidizi.source + "/search/so?cid=0&list=1&page=1&key=" + encodeURIComponent(qidizi.word) + "&page=" + page;
         }
 
         // 防止因为响应慢，并发，总是取消前面的
