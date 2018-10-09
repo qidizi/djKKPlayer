@@ -10,7 +10,7 @@
         makePlayer();
         return;
     }
-    
+
     // 注入模式
     var source = 'vvvdj.com';
     if (!location.hostname || location.hostname.toLowerCase().indexOf(source) < 0) {
@@ -23,11 +23,11 @@
 }();
 
 function quit(tip) {
-	if (document.body) {
-		document.body.innerHTML = tip;
-		return;
-	}
-	
+    if (document.body) {
+        document.body.innerHTML = tip;
+        return;
+    }
+
     document.open();
     document.write(
         '<!DOCTYPE html><html><head>' +
@@ -45,12 +45,12 @@ function makePlayer() {
             window.charIndex++;
 
         if (window.charIndex >= 100) window.charIndex = 1;
-        
-         document.documentElement.innerHTML = '*'.repeat(window.charIndex);
-         setTimeout(makePlayer, 500);
-         return;
-     }
- 
+
+        document.documentElement.innerHTML = '*'.repeat(window.charIndex);
+        setTimeout(makePlayer, 500);
+        return;
+    }
+
     var html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -81,6 +81,9 @@ function makePlayer() {
 </head>
 <body>
 <nav class="navbar fixed-top navbar-light bg-light">
+    <div class="progress invisible" id="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" style="width: 100%"></div>
+    </div>
     <form onsubmit="return false;" class="needs-validation form-inline mx-auto" novalidate="novalidate" id="searchForm">
         <div class="input-group"><input class="form-control text-center" placeholder="找啥？" id="keyWord"
                                         required="required">
@@ -114,31 +117,31 @@ function makePlayer() {
     document.close();
 }
 
-function catchError(){
-	window.onerror = function(msg, url, lineNo, columnNo, error) {
-		var string = msg.toLowerCase();
-    var substring = "script error";
-    if (string.indexOf(substring) > -1){
-        alert('Script Error: See Browser Console for Detail');
-    } else {
-        var message = [
-            'Message: ' + msg,
-            'URL: ' + url,
-            'Line: ' + lineNo,
-            'Column: ' + columnNo,
-            'Error object: ' + JSON.stringify(error)
-        ].join(' - ');
+function catchError() {
+    window.onerror = function (msg, url, lineNo, columnNo, error) {
+        var string = msg.toLowerCase();
+        var substring = "script error";
+        if (string.indexOf(substring) > -1) {
+            alert('Script Error: 可能是异域或是跨域异常，无法获取错误详情，请看控制台');
+        } else {
+            var message = [
+                'Message: ' + msg,
+                'URL: ' + url,
+                'Line: ' + lineNo,
+                'Column: ' + columnNo,
+                'Error object: ' + JSON.stringify(error)
+            ].join(' - ');
 
-        alert('播放器异常\n' + message);
-    }
+            alert('播放器异常\n' + message);
+        }
 
-		return false;
+        return false;
     };
 }
 
 function javascript() {
-	var qidizi = {
-		useProxy:location.host.indexOf('github') > -1,
+    var qidizi = {
+        useProxy: location.host.indexOf('github') > -1,
         isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
         isMac: 'MacIntel' === navigator.platform,
         isAndroid: navigator.userAgent.indexOf('Android'),
@@ -148,36 +151,36 @@ function javascript() {
     };
     /* 可能子域是www或是m*/
     if (!qidizi.useProxy) qidizi.source = location.href.replace(/^([^:]+:\/+[^\/]+).*/, "$1");
-    
+
     if (qidizi.isIos) {
-            // ios系统的音量是只读的
-            $('.jsVolumeChange').hide();
-        }
+        // ios系统的音量是只读的
+        $('.jsVolumeChange').hide();
+    }
 
-        /*
-        ios限制，需要用户操作触发首次播放，下次才能自动播放,firefox 有选项启用限制功能
-        统一触发
-        */
-        $('body').one('click', function () {
-            getAudio().play();
-        });
-        /* ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；*/
-        getAudio().onended = playNext;
-        try {
-            var list = new Function('', 'return ' + localStorage.getItem('qidiziDjPlayer'))();
+    /*
+    ios限制，需要用户操作触发首次播放，下次才能自动播放,firefox 有选项启用限制功能
+    统一触发
+    */
+    $('body').one('click', function () {
+        getAudio().play();
+    });
+    /* ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；*/
+    getAudio().onended = playNext;
+    try {
+        var list = new Function('', 'return ' + localStorage.getItem('qidiziDjPlayer'))();
 
-            if ('object' === typeof list) {
-                var html = '';
-                for (var i = 0; i < list.length; i++) {
-                    var li = list[i];
-                    html += listLi(li.s, li.t, li.p ? 'list-group-item-success' : "");
-                }
-                $('#playList').html(html);
+        if ('object' === typeof list) {
+            var html = '';
+            for (var i = 0; i < list.length; i++) {
+                var li = list[i];
+                html += listLi(li.s, li.t, li.p ? 'list-group-item-success' : "");
             }
-        } catch (e) {
-
+            $('#playList').html(html);
         }
-   
+    } catch (e) {
+
+    }
+
     $(document)
         .delegate('.jsVolumeChange', 'click', function () {
             var isUp = $(this).hasClass('isUp');
@@ -292,14 +295,44 @@ function javascript() {
 
     function getMusic(href, dom) {
         var clk = this;
-        $.ajax({
-            url: qidizi.proxy,
-            type: 'POST',
+
+        if (dom.attr('data-audio')) {
+            doSrc(dom.attr('data-audio'));
+            return;
+        }
+
+        function doSrc(src) {
+            var is = $(clk).attr('data-is');
+            var title = $.trim(dom.find('.jsSongTitle').text());
+            var li = $('li[data-href="' + src + '"]');
+
+            if ('test' !== is && !li.length) {
+                li = $(listLi(src, title));
+                li.appendTo('#playList');
+                saveList();
+            }
+
+            'append' !== is && playMe(src, title, li);
+        }
+
+        // 防止因为响应慢，并发，总是取消前面的
+        if (qidizi.ajax) {
+            try {
+                qidizi.ajax.abort();
+            } catch (e) {
+
+            }
+        }
+
+        progress(1);
+        qidizi.ajax = $.ajax({
+            url: qidizi.useProxy ? qidizi.proxy : href,
+            type: qidizi.useProxy ? 'POST' : 'GET',
             cache: false,
             dataType: 'text',
-            data: {
+            data: qidizi.useProxy ? {
                 base64EncodeUrl: Base64.encode(href)
-            },
+            } : null,
             success: function (body) {
                 var code = body;
                 try {
@@ -324,20 +357,14 @@ function javascript() {
                     return;
                 }
 
-                var is = $(clk).attr('data-is');
-                var title = $.trim(dom.find('.jsSongTitle').text());
-                var li = $('li[data-href="' + src + '"]');
-
-                if ('test' !== is && !li.length) {
-                    li = $(listLi(src, title));
-                    li.appendTo('#playList');
-                    saveList();
-                }
-
-                'append' !== is && playMe(src, title, li);
+                dom.attr('data-audio', src);
+                doSrc(src);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 myAlert('获取播放地址异常，请联系作者修复[' + textStatus + ']', dom);
+            },
+            complete: function () {
+                progress(0);
             }
         });
     }
@@ -365,12 +392,22 @@ function javascript() {
             return qidizi.source + "/search/so??cid=0&list=1&page=1&key=" + encodeURIComponent(qidizi.word) + "&page=" + page;
         }
 
-        $.ajax({
-            url: qidizi.proxy,
-            data: {
+        // 防止因为响应慢，并发，总是取消前面的
+        if (qidizi.ajax) {
+            try {
+                qidizi.ajax.abort();
+            } catch (e) {
+
+            }
+        }
+
+        progress(1);
+        qidizi.ajax = $.ajax({
+            url: qidizi.useProxy ? qidizi.proxy : getUrl(page),
+            data: qidizi.useProxy ? null : {
                 base64EncodeUrl: Base64.encode(getUrl(page))
             },
-            type: 'POST',
+            type: qidizi.useProxy ? 'POST' : 'GET',
             cache: false,
             success: function (body) {
                 var code = body;
@@ -478,9 +515,11 @@ function javascript() {
                 resultHtml(songHtml);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                resultInfo('oops!好像出了点意外哦！什么都没有...[' + textStatus + ']');
+                resultInfo('oops!好像出了点意外哦...[' + textStatus + ']，' +
+                    '<a href="javascript:void(' + page + ')" class="btn btn-link jsNextPage" data-page="' + page + '">点此重试</a>');
             },
             complete: function () {
+                progress(0);
                 $('#keyWord').removeAttr('readonly');
             },
             dataType: 'text'
@@ -517,11 +556,6 @@ function javascript() {
         saveList();
     }
 
-
-    function quit(tip) {
-        document.body.innerHTML = tip;
-    }
-
     function myAlert(html) {
         $('#alertContent').html(html);
         $('#alert').addClass('show').removeClass('hide');
@@ -534,6 +568,10 @@ function javascript() {
             ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="play">播放</a>' +
             ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="append">加入</a>' +
             '</li>';
+    }
+
+    function progress(show) {
+        $('#progress')[show ? removeClass : addClass]('invisible');
     }
 
     function listLi(src, title, cls) {
