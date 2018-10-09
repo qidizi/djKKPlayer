@@ -571,7 +571,7 @@ function javascript() {
     }
 
     function progress(show) {
-        $('#progress')[show ? removeClass : addClass]('invisible');
+        $('#progress')[show ? 'removeClass' : 'addClass']('invisible');
     }
 
     function listLi(src, title, cls) {
