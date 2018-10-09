@@ -55,8 +55,11 @@
 </p>
 <script>
     function javascript() {
-        document.write('<' + 'script type="text/javascript" charset="UTF-8" src="{host}insert.js?r=' + (+new Date) + '"><' + '/script>Loading...');
-        document.close();
+        var js = document.create('script');
+        js.setAttribute('type',"text/javascript");
+        js.setAttribute('charset',"UTF-8");
+        js.src = '{host}insert.js?r=' + +new Date;
+        document.documentElement.appendChild(js);
     }
 
     // 自己选择域名
