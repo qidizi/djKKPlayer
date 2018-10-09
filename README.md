@@ -4,7 +4,7 @@
 因为自己比较喜欢听旋律比较好的dj音乐，为了方便使用，自己弄了个播放器，音源来自网络。
 不定时根据自己使用感受改变音源，优化功能。
 
-## v2版本，代理方式，打开网址即用
+## proxy版本，服务器代理方式，打开网址即用
 ### 原理
 使用服务器做跨域代理，获取音源内容
 
@@ -21,15 +21,15 @@
 1. ios 使用uc与opera测试，在浏览器处于后台或是锁屏时，才能自动播放下首，而其它浏览却不行。所以建议使用这2种浏览使用
 
 ### 使用方式
-[点此链接即用](https://qidizi.github.io/djPlayer/v2.html)
+[点此链接即用](https://qidizi.github.io/djPlayer/proxy.html)
 
 ### 截屏
 
-![android手机截图](https://github.com/qidizi/djKKPlayer/raw/master/v2.png)
+![android手机截图](https://github.com/qidizi/djKKPlayer/raw/master/proxy.png)
 *****
 
 
-## v1版本，注入方式
+## 注入版本，在音源站注入播放器方式
 
 ### 原理：
 

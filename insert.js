@@ -1,19 +1,21 @@
 +function () {
     try {
-        localStorage.setItem("qidizi", 1);
+        localStorage.setItem("null", 1);
     } catch (e) {
-        quit("浏览器版本过低，或您使用了隐私模式：自动保存播放列表功能无法正常工作");
+        quit("不支持自动保存播放列表功能！若您使用了隐私模式，请切换为普通模式再试用！若是您浏览器不支持，建议升级最新的chrome浏览器");
         return;
     }
 
+    if (window.useProxy) {
+        makePlayer();
+        return;
+    }
+    
+    // 注入模式
     var source = 'vvvdj.com';
     if (!location.hostname || location.hostname.toLowerCase().indexOf(source) < 0) {
-        var delay = 3;
-        quit('页面完成后，请<strong style="color: red;" >再次点击标签</strong>，注入播放器<br>' +
-            delay + '秒后自动打开<a href="' + source + '">' + source + '</a>');
-        setTimeout(function () {
-            location.href = "http://www." + source + '/?r=' + +new Date;
-        }, delay * 1000);
+        alert('提示：进入DJ网后，还需再次点击书签');
+        location.href = 'http://' + source;
         return;
     }
 
@@ -21,6 +23,11 @@
 }();
 
 function quit(tip) {
+	if (document.body) {
+		document.body.innerHTML = tip;
+		return;
+	}
+	
     document.open();
     document.write(
         '<!DOCTYPE html><html><head>' +
@@ -32,28 +39,38 @@ function quit(tip) {
 }
 
 function makePlayer() {
-    if ('loading' === document.readyState) return setTimeout(makePlayer, 100);
+    if ('complete' !== document.readyState) {
+        if ('number' !== typeof window.charIndex) window.charIndex = 1;
+        else
+            window.charIndex++;
+
+        if (window.charIndex >= 100) window.charIndex = 1;
+        
+         document.documentElement.innerHTML = '*'.repeat(window.charIndex);
+         setTimeout(makePlayer, 500);
+         return;
+     }
+ 
     var html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>DJ Player</title>
-    <meta charset="utf-8">
+    <title>DJ音乐播放器 -- by qidizi</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Base64/1.0.1/base64.min.js"></script>
+    <script src="./base64.js"></script>
     <style>
-        html,body{min-width:100%;min-height:100%;display: block;}
+        html, body {
+            min-width: 100%;
+            min-height: 100%;
+            display: block;
+        }
+
         .listBody {
             margin: 0 auto;
             padding: 70px 0 200px 0;
@@ -86,74 +103,95 @@ function makePlayer() {
     <div id="song" class="text-center navbar-text w-100 text-truncate" role="alert">播放已停止</div>
     <audio controls="controls" autoplay="autoplay" id="audio" class="b-block w-100"></audio>
 </nav>
-<script type="text/javascript" charset="UTF-8"><!--/*js*///--></script>
+<!--js-->
 </body>
 </html>
     `;
     // 发现放到html后面，不会解析js
-    html = html.replace('<!--/*js*///-->', '+' + javascript + '();');
+    html = html.replace('<!--js-->', '<script type="text/javascript" charset="UTF-8">+' + catchError + '();+' + javascript + '();</script>');
     document.open();
     document.write(html);
     document.close();
 }
 
-function javascript() {
-    /* 可能子域是www或是m*/
-    var qidizi = {};
-    var source = location.href.replace(/^([^:]+:\/+[^\/]+).*/, "$1");
-    window.audio = document.getElementById('audio');
-    var plaform = {
-        /* ios volume readonly */
-        isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
-        isMac: 'MacIntel' === navigator.platform,
-        isAndroid: navigator.userAgent.indexOf('Android')
-    };
+function catchError(){
+	window.onerror = function(msg, url, lineNo, columnNo, error) {
+		var string = msg.toLowerCase();
+    var substring = "script error";
+    if (string.indexOf(substring) > -1){
+        alert('Script Error: See Browser Console for Detail');
+    } else {
+        var message = [
+            'Message: ' + msg,
+            'URL: ' + url,
+            'Line: ' + lineNo,
+            'Column: ' + columnNo,
+            'Error object: ' + JSON.stringify(error)
+        ].join(' - ');
 
-        /* 禁用并绑定调整音量按钮提示
-         ios 限制，需要用户操作触发首次播放，下次才能自动播放,firefox 有选项启用
-         */
-        $('body').one('click', function () {
-            audio.play();
-        });
-
-    /* ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；*/
-    audio.onended = playNext;
-
-    try {
-        var list = new Function('', 'return ' + localStorage.getItem('qidiziDjPlayer'))();
-
-        if ('object' === typeof list) {
-            var html = '';
-            for (var i = 0; i < list.length; i++) {
-                var li = list[i];
-                html += listLi(li.s, li.t, li.p ? 'list-group-item-success' : "");
-            }
-            $('#playList').html(html);
-        }
-    } catch (e) {
-
+        alert('播放器异常\n' + message);
     }
 
+		return false;
+    };
+}
+
+function javascript() {
+	var qidizi = {
+		useProxy:location.host.indexOf('github') > -1,
+        isIos: 'iPhone/iPad'.indexOf(navigator.platform) > -1,
+        isMac: 'MacIntel' === navigator.platform,
+        isAndroid: navigator.userAgent.indexOf('Android'),
+        source: 'https://m.vvvdj.com',
+        // 代理php实现：https://github.com/qidizi/code-snippets/blob/master/php/proxy-auth-by-white-list.php
+        proxy: location.host.indexOf('github') > 0 || 1 ? 'https://proxy.d.iguoyi.cn/' : 'http://php.local.qidizi.com/proxy.php'
+    };
+    /* 可能子域是www或是m*/
+    if (!qidizi.useProxy) qidizi.source = location.href.replace(/^([^:]+:\/+[^\/]+).*/, "$1");
+    
+    if (qidizi.isIos) {
+            // ios系统的音量是只读的
+            $('.jsVolumeChange').hide();
+        }
+
+        /*
+        ios限制，需要用户操作触发首次播放，下次才能自动播放,firefox 有选项启用限制功能
+        统一触发
+        */
+        $('body').one('click', function () {
+            getAudio().play();
+        });
+        /* ios background 浏览器时，无法自动开始播放下首，但是chrome 锁屏时却可以；*/
+        getAudio().onended = playNext;
+        try {
+            var list = new Function('', 'return ' + localStorage.getItem('qidiziDjPlayer'))();
+
+            if ('object' === typeof list) {
+                var html = '';
+                for (var i = 0; i < list.length; i++) {
+                    var li = list[i];
+                    html += listLi(li.s, li.t, li.p ? 'list-group-item-success' : "");
+                }
+                $('#playList').html(html);
+            }
+        } catch (e) {
+
+        }
+   
     $(document)
         .delegate('.jsVolumeChange', 'click', function () {
-            if (plaform.isIos) {
-                /* ios volume readonly */
-                $('.jsVolumeChange').addClass('disabled');
-                return;
-            }
-
             var isUp = $(this).hasClass('isUp');
             try {
-                var vol = audio.volume + (isUp ? +1 : -1) * 0.05;
+                var vol = getAudio().volume + (isUp ? +1 : -1) * 0.05;
 
                 if (vol > 1) vol = 1;
                 else if (vol < 0) vol = 0;
 
-                audio.volume = vol;
+                getAudio().volume = vol;
             } catch (e) {
 
             }
-            $(this).stop().html(String(audio.volume).replace(/(\.\d{2})\d+$/, '$1')).show().delay(1000).show(function () {
+            $(this).stop().html(String(getAudio().volume).replace(/(\.\d{2})\d+$/, '$1')).show().delay(1000).show(function () {
                 $(this).html(isUp ? '加大' : '减小');
             });
         })
@@ -166,17 +204,17 @@ function javascript() {
         .delegate('.jsRemoveMe', 'click', function () {
             var li = $(this).parents('li');
             var src = li.attr('data-href');
-            if (audio.src === src) playNext();
+            if (getAudio().src === src) playNext();
             li.remove();
             saveList();
         })
         .delegate('#deletePlay', 'click', function () {
-            var li = $('#playList li[data-href="' + audio.src + '"]');
+            var li = $('#playList li[data-href="' + getAudio().src + '"]');
 
             if (li.length) {
                 playNext();
             } else {
-                audio.pause();
+                getAudio().pause();
             }
 
             li.remove();
@@ -207,9 +245,13 @@ function javascript() {
             getSearch($(this).attr('data-page'));
         })
         .delegate('#togglePlayList', 'click', function () {
-            switchList($(this).hasClass('active') ? false : true);
+            switchList(!$(this).hasClass('active'));
         })
     ;
+
+    function getAudio() {
+        return document.getElementById('audio');
+    }
 
     function switchList(isPlayList) {
         $('.jsListBody').addClass('d-none');
@@ -224,17 +266,6 @@ function javascript() {
             $('#togglePlayList').removeClass('active');
             $('#search').addClass('active');
         }
-    }
-
-    function listLi(src, title, cls) {
-        return '<li class="list-group-item ' + (cls || '') + ' text-right"  data-href="' + src + '">' +
-            '<a class="btn btn-link jsSongTitle mw-100 text-truncate" href="javascript:void(0);">' +
-            title +
-            '</a>' +
-            '<br>' + 
-            '<a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删了</a> ' +
-            '<a class="btn btn-outline-success jsPlayMe" href="javascript:void(0);">播放</a> ' +
-            '</li>';
     }
 
     function saveList() {
@@ -259,17 +290,16 @@ function javascript() {
         }
     }
 
-    function myAlert(html, dom) {
-        alert(html);
-    }
-
     function getMusic(href, dom) {
         var clk = this;
         $.ajax({
-            url: href,
+            url: qidizi.proxy,
             type: 'POST',
             cache: false,
             dataType: 'text',
+            data: {
+                base64EncodeUrl: Base64.encode(href)
+            },
             success: function (body) {
                 var code = body;
                 try {
@@ -280,7 +310,7 @@ function javascript() {
                 }
 
                 var src = 0;
-                // 目前不分pc或wap
+// 目前不分pc或wap
                 code.replace(/function\s+DeCode[\s\S]+?playurl\s*=[^;]+\.[^;]+/, function (js) {
                     try {
                         src = new Function('', js + ';return "http://tm.vvvdj.com/mp4/" +playurl+".mp4";')();
@@ -307,7 +337,7 @@ function javascript() {
                 'append' !== is && playMe(src, title, li);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                myAlert('获取播放地址异常，请联系作者修复[' + textStatus + ']',dom);
+                myAlert('获取播放地址异常，请联系作者修复[' + textStatus + ']', dom);
             }
         });
     }
@@ -324,28 +354,22 @@ function javascript() {
         $('#result').html(html);
     }
 
-    function resultLi(id, title) {
-        return '<li class="list-group-item text-right"  data-href="' + source + '/play/' + id + '.html">' +
-            '<a href="javascript:void(0)" class="btn btn-link mw-100 text-truncate jsSongTitle">' + title + '</a>' +
-            '<br><a href="javascript:void(0)" class="btn btn-outline-primary jsPlayResultItem" data-is="test">试听</a>' +
-            ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="play">播放</a>' +
-            ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="append">加入</a>' +
-            '</li>';
-    }
-
     function getSearch(page) {
         switchList();
         resultInfo('搜索中...');
         $('#keyWord').attr('readonly', 'readonly');
         page = +page || 1;
 
-        // cid 0全部，1串烧，2单曲；list 1 a-z，2 z-a，3 热播，4 下载最多
+// cid 0全部，1串烧，2单曲；list 1 a-z，2 z-a，3 热播，4 下载最多
         function getUrl(page) {
-            return source + "/search/so??cid=0&list=1&page=1&key=" + encodeURIComponent(qidizi.word) + "&page=" + page;
+            return qidizi.source + "/search/so??cid=0&list=1&page=1&key=" + encodeURIComponent(qidizi.word) + "&page=" + page;
         }
 
         $.ajax({
-            url: getUrl(page),
+            url: qidizi.proxy,
+            data: {
+                base64EncodeUrl: Base64.encode(getUrl(page))
+            },
             type: 'POST',
             cache: false,
             success: function (body) {
@@ -362,8 +386,8 @@ function javascript() {
                 var count = 0;
                 var pages = 1;
 
-                if (source.indexOf('://www.') > 0) {
-                    // pc
+                if (qidizi.source.indexOf('://www.') > 0) {
+// pc
                     songHtml = songHtml.match(/共搜索到[^<]*<[^>]+>(\d+)([\S\s]+?)左侧结束/);
 
                     if (!songHtml) {
@@ -382,7 +406,7 @@ function javascript() {
                     songHtml = songHtml.replace(
                         /href\s*=\s*"\/play\/(\d+)\.html"[^>]*title\s*=\s*"([^"]+)/ig,
                         function ($1, id, title) {
-                            song.push(resultLi(id, title));
+                            song.push(searchLi(id, title));
                             return '';
                         }
                     );
@@ -398,7 +422,7 @@ function javascript() {
                         pages = +songHtml[1];
                     }
                 } else {
-                    // 手机
+// 手机
 
                     if (songHtml.indexOf('无记录...') > 0) {
                         resultInfo('查无此歌');
@@ -410,7 +434,7 @@ function javascript() {
                     songHtml
                         .replace(/<\/?em>/g, '')
                         .replace(/<a\s*href="\/play\/(\d+)\.html"[^>]*>\s*<p>([^<]+)/ig, function ($0, id, title) {
-                            song.push(resultLi(id, title));
+                            song.push(searchLi(id, title));
                             return '';
                         });
 
@@ -488,9 +512,37 @@ function javascript() {
         $('#playList li').removeClass(playCls);
         $(li).addClass(playCls);
         $('#song').text(document.title = title);
-        var audio = $('audio').get(0);
-        audio.src = src;
-        audio.play();
+        getAudio().src = src;
+        getAudio().play();
         saveList();
+    }
+
+
+    function quit(tip) {
+        document.body.innerHTML = tip;
+    }
+
+    function myAlert(html) {
+        $('#alertContent').html(html);
+        $('#alert').addClass('show').removeClass('hide');
+    }
+
+    function searchLi(id, title) {
+        return '<li class="list-group-item text-right"  data-href="' + qidizi.source + '/play/' + id + '.html">' +
+            '<p class="mw-100 text-truncate jsSongTitle">' + title + '</p>' +
+            '<a href="javascript:void(0)" class="btn btn-outline-primary jsPlayResultItem" data-is="test">试听</a>' +
+            ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="play">播放</a>' +
+            ' <a href="javascript:void(0)" class="btn btn-outline-success jsPlayResultItem" data-is="append">加入</a>' +
+            '</li>';
+    }
+
+    function listLi(src, title, cls) {
+        return '<li class="list-group-item ' + (cls || '') + ' text-right"  data-href="' + src + '">' +
+            '<p class="jsSongTitle mw-100 text-truncate">' +
+            title +
+            '</p>' +
+            '<a class="btn btn-outline-danger jsRemoveMe" href="javascript:void(0);">删了</a> ' +
+            '<a class="btn btn-outline-success jsPlayMe" href="javascript:void(0);">播放</a> ' +
+            '</li>';
     }
 }

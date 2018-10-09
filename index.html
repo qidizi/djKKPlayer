@@ -69,7 +69,7 @@
     for (var i = 0; i < str.length; i++) {
         code.push(str.charCodeAt(i));
     }
-    var url = 'javascript:eval(String.fromCharCode(' + code + '));';
+    var url = 'javascript:eval(prompt(0,String.fromCharCode(' + code + ')));';
     document.getElementById('code').href = url;
 </script>
 </body>
