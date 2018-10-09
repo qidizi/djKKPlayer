@@ -77,13 +77,11 @@ function makePlayer() {
             max-width: 700px;
             min-height: 100%;
         }
+        #progress{height:5px;padding-top:2px;}
     </style>
 </head>
 <body>
-<nav class="navbar fixed-top navbar-light bg-light">
-    <div class="progress invisible" id="progress">
-        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" style="width: 100%"></div>
-    </div>
+<nav class="navbar fixed-top navbar-light bg-light text-center">
     <form onsubmit="return false;" class="needs-validation form-inline mx-auto" novalidate="novalidate" id="searchForm">
         <div class="input-group"><input class="form-control text-center" placeholder="找啥？" id="keyWord"
                                         required="required">
@@ -93,6 +91,9 @@ function makePlayer() {
             </div>
         </div>
     </form>
+    <div class="progress d-none w-100" id="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+    </div>
 </nav>
 <ul class="list-group listBody d-none jsListBody" id="result"></ul>
 <ul class="list-group listBody jsListBody" id="playList"></ul>
@@ -104,7 +105,7 @@ function makePlayer() {
         <a class="btn btn-outline-success text-success" id="playNext">下首</a>
     </div>
     <div id="song" class="text-center navbar-text w-100 text-truncate" role="alert">播放已停止</div>
-    <audio controls="controls" autoplay="autoplay" id="audio" class="b-block w-100"></audio>
+    <audio controls="controls" autoplay="autoplay" id="audio" class="d-block w-100"></audio>
 </nav>
 <!--js-->
 </body>
@@ -571,7 +572,7 @@ function javascript() {
     }
 
     function progress(show) {
-        $('#progress')[show ? 'removeClass' : 'addClass']('invisible');
+        $('#progress')[show ? 'removeClass' : 'addClass']('d-none');
     }
 
     function listLi(src, title, cls) {
